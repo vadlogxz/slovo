@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/vocabulary/di/vocabulary_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
+import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/feature/vocabulary/presentation/widgets/_.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
-class VocabularyScreen extends ConsumerStatefulWidget {
+class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
 
   @override
-  ConsumerState<VocabularyScreen> createState() => _VocabularyScreenState();
+  State<VocabularyScreen> createState() => _VocabularyScreenState();
 }
 
-class _VocabularyScreenState extends ConsumerState<VocabularyScreen> {
+class _VocabularyScreenState extends State<VocabularyScreen> {
   int _tabIndex = 0;
   final _searchController = TextEditingController();
   String _query = '';
@@ -38,7 +37,6 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final tt = Theme.of(context).textTheme;
-    final collectionsAsync = ref.watch(userCollectionsProvider);
 
     return Scaffold(
       backgroundColor: colors.surfaceSubtle,
@@ -50,10 +48,7 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: SegmentedControl(
-                tabs: [
-                  'Mine${collectionsAsync.value != null ? ' (${collectionsAsync.value!.length})' : ''}',
-                  'Discover',
-                ],
+                tabs: ['Mine (${mockCollections.length})', 'Discover'],
                 selectedIndex: _tabIndex,
                 onChanged: (i) => setState(() => _tabIndex = i),
               ),
@@ -66,13 +61,11 @@ class _VocabularyScreenState extends ConsumerState<VocabularyScreen> {
             const SizedBox(height: AppSpacing.sm),
             Expanded(
               child: _tabIndex == 0
-                  ? AsyncValueView(
-                      value: collectionsAsync,
-                      errorMessage: 'Failed to load collections',
-                      data: (collections) {
+                  ? Builder(
+                      builder: (context) {
                         final filtered = _query.isEmpty
-                            ? collections
-                            : collections
+                            ? mockCollections
+                            : mockCollections
                                 .where((c) => c.title
                                     .toLowerCase()
                                     .contains(_query))

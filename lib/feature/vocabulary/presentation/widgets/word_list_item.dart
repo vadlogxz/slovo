@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/study/domain/models/card_progress.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
@@ -9,23 +8,12 @@ class WordListItem extends StatelessWidget {
     super.key,
     required this.word,
     this.isJustAdded = false,
-    this.progress,
     this.onTap,
   });
 
   final Word word;
   final bool isJustAdded;
-
-  // Null means no review has ever been recorded for this word — treated
-  // the same as "due" for the status dot below.
-  final CardProgress? progress;
   final VoidCallback? onTap;
-
-  Color _statusColor(AppColors colors) {
-    if (progress.isDueOrNew) return colors.warning;
-    if (progress!.isMastered) return colors.success;
-    return colors.primary;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +76,7 @@ class WordListItem extends StatelessWidget {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _statusColor(colors),
+                color: colors.primary,
                 shape: BoxShape.circle,
               ),
             ),

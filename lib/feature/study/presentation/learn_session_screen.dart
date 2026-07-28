@@ -1,58 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fsrs/fsrs.dart' as fsrs;
 import 'package:go_router/go_router.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/study/di/learn_session_notifier.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
+import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
-class LearnSessionScreen extends ConsumerWidget {
+class LearnSessionScreen extends StatefulWidget {
   const LearnSessionScreen({super.key, required this.collectionId});
 
   final String collectionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<LearnSessionScreen> createState() => _LearnSessionScreenState();
+}
+
+class _LearnSessionScreenState extends State<LearnSessionScreen> {
+  late final List<Word> _queue;
+  int _currentIndex = 0;
+  bool _revealed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _queue = List.of(wordsOf(widget.collectionId));
+  }
+
+  void _reveal() {
+    if (_revealed) return;
+    setState(() => _revealed = true);
+  }
+
+  // No FSRS scheduling behind this session — either rating choice (or swipe
+  // direction) just advances to the next card in the mock queue.
+  void _advance() {
+    setState(() {
+      _currentIndex++;
+      _revealed = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = context.colors;
-    final sessionAsync = ref.watch(learnSessionProvider(collectionId));
 
     return Scaffold(
       backgroundColor: colors.surfaceSubtle,
       body: SafeArea(
-        child: AsyncValueView(
-          value: sessionAsync,
-          errorMessage: 'Couldn\'t load this session',
-          data: (session) {
-            if (session.total == 0) {
-              return _EmptySession(onDone: () => context.pop());
-            }
-            if (session.isComplete) {
-              return _SessionComplete(
-                reviewed: session.queue.length,
+        child: _queue.isEmpty
+            ? _EmptySession(onDone: () => context.pop())
+            : _currentIndex >= _queue.length
+            ? _SessionComplete(
+                reviewed: _queue.length,
                 onDone: () => context.pop(),
-              );
-            }
-            return _SessionBody(collectionId: collectionId, session: session);
-          },
-        ),
+              )
+            : _SessionBody(
+                currentIndex: _currentIndex,
+                total: _queue.length,
+                word: _queue[_currentIndex],
+                revealed: _revealed,
+                onReveal: _reveal,
+                onAdvance: _advance,
+              ),
       ),
     );
   }
 }
 
-class _SessionBody extends ConsumerWidget {
-  const _SessionBody({required this.collectionId, required this.session});
+class _SessionBody extends StatelessWidget {
+  const _SessionBody({
+    required this.currentIndex,
+    required this.total,
+    required this.word,
+    required this.revealed,
+    required this.onReveal,
+    required this.onAdvance,
+  });
 
-  final String collectionId;
-  final LearnSessionState session;
+  final int currentIndex;
+  final int total;
+  final Word word;
+  final bool revealed;
+  final VoidCallback onReveal;
+  final VoidCallback onAdvance;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final colors = context.colors;
     final tt = Theme.of(context).textTheme;
-    final notifier = ref.read(learnSessionProvider(collectionId).notifier);
-    final (word, _) = session.current!;
 
     return Column(
       children: [
@@ -70,12 +104,10 @@ class _SessionBody extends ConsumerWidget {
                 child: Icon(Icons.close_rounded, color: colors.textSecondary),
               ),
               const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: ProgressBar(value: session.currentIndex / session.total),
-              ),
+              Expanded(child: ProgressBar(value: currentIndex / total)),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                '${session.currentIndex + 1}/${session.total}',
+                '${currentIndex + 1}/$total',
                 style: tt.labelMedium?.copyWith(color: colors.textMuted),
               ),
             ],
@@ -86,10 +118,10 @@ class _SessionBody extends ConsumerWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: _SwipeableCard(
               word: word,
-              revealed: session.revealed,
-              onTap: notifier.reveal,
-              onSwipeLeft: () => notifier.rate(fsrs.Rating.again),
-              onSwipeRight: () => notifier.rate(fsrs.Rating.good),
+              revealed: revealed,
+              onTap: onReveal,
+              onSwipeLeft: onAdvance,
+              onSwipeRight: onAdvance,
             ),
           ),
         ),
@@ -104,7 +136,7 @@ class _SessionBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => notifier.rate(fsrs.Rating.again),
+                  onPressed: onAdvance,
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: colors.outline),
                     padding: const EdgeInsets.symmetric(
@@ -125,10 +157,7 @@ class _SessionBody extends ConsumerWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: AppButton(
-                  onTap: () => notifier.rate(fsrs.Rating.good),
-                  text: 'Know it',
-                ),
+                child: AppButton(onTap: onAdvance, text: 'Know it'),
               ),
             ],
           ),

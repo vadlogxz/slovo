@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/home/presentation/widgets/_.dart';
-import 'package:slovo/feature/onboarding/domain/models/daily_goal.dart';
-import 'package:slovo/feature/profile/di/profile_provider.dart';
-import 'package:slovo/feature/study/di/study_provider.dart';
-import 'package:slovo/feature/vocabulary/di/vocabulary_provider.dart';
+import 'package:slovo/feature/profile/domain/models/user_profile.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
+import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/shared/widgets/_.dart';
+
+// No profile backend behind Home — streak/daily-goal display a fixed mock
+// profile instead of reading a Firestore-backed provider.
+const _mockProfile = UserProfile(
+  uid: 'mock-user',
+  displayName: 'Alex',
+  streak: 4,
+  dailyGoalMinutes: 15,
+);
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -46,7 +52,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _HomeHeader extends ConsumerWidget {
+class _HomeHeader extends StatelessWidget {
   const _HomeHeader();
 
   String get _greeting {
@@ -57,9 +63,7 @@ class _HomeHeader extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userProfileAsync = ref.watch(userProfileProvider);
-    final streak = userProfileAsync.value?.streak ?? 0;
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
 
@@ -74,60 +78,28 @@ class _HomeHeader extends ConsumerWidget {
                 _greeting,
                 style: tt.bodyMedium?.copyWith(color: colors.textSecondary),
               ),
-              userProfileAsync.when(
-                data: (profile) => Text(
-                  profile?.displayName ?? '',
-                  style: tt.titleLarge,
-                ),
-                loading: () => SizedBox(
-                  height: 28,
-                  width: 120,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.surfaceSubtle,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                  ),
-                ),
-                // Name unavailable — fall back to a friendly generic
-                // greeting rather than leaving this slot blank.
-                error: (e, _) => Text('there', style: tt.titleLarge),
-              ),
+              Text(_mockProfile.displayName, style: tt.titleLarge),
             ],
           ),
         ),
-        StreakBadge(streak: streak),
+        StreakBadge(streak: _mockProfile.streak),
       ],
     );
   }
 }
 
-class _DailyGoalSection extends ConsumerWidget {
+class _DailyGoalSection extends StatelessWidget {
   const _DailyGoalSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userProfileAsync = ref.watch(userProfileProvider);
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
 
-    return userProfileAsync.when(
-      loading: () => _buildSkeleton(colors),
-      error: (e, _) => Text(
-        'Couldn\'t load your daily goal',
-        style: tt.bodyMedium?.copyWith(color: colors.textSecondary),
-      ),
-      data: (profile) {
-        final goalMinutes =
-            profile?.dailyGoalMinutes ?? DailyGoal.regular.minutes;
-        final currentMinutes = 1;
-        final progress = goalMinutes > 0 ? currentMinutes / goalMinutes : 0.0;
-        return _buildContent(tt, colors, goalMinutes, currentMinutes, progress);
-      },
-    );
-  }
+    final goalMinutes = _mockProfile.dailyGoalMinutes;
+    const currentMinutes = 1;
+    final progress = goalMinutes > 0 ? currentMinutes / goalMinutes : 0.0;
 
-  Widget _buildContent(TextTheme tt, AppColors colors, int goalMinutes,int currentMinutes, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -155,67 +127,21 @@ class _DailyGoalSection extends ConsumerWidget {
       ],
     );
   }
-
-  Widget _buildSkeleton(AppColors colors) {
-    final decoration = BoxDecoration(
-      color: colors.surfaceSubtle,
-      borderRadius: BorderRadius.circular(AppRadius.sm),
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: 14, width: 90, child: DecoratedBox(decoration: decoration)),
-            SizedBox(height: 14, width: 80, child: DecoratedBox(decoration: decoration)),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        SizedBox(height: 6, width: double.infinity, child: DecoratedBox(decoration: decoration)),
-      ],
-    );
-  }
 }
 
 // ~30s per word review is a rough estimate until FSRS session timing exists.
 const _secondsPerWordReview = 30;
 
-class _WordsDueSection extends ConsumerWidget {
+class _WordsDueSection extends StatelessWidget {
   const _WordsDueSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final collections = ref.watch(userCollectionsProvider).value ?? const [];
-    final allProgress = ref.watch(allProgressProvider).value ?? const [];
-
-    // Real due-count per collection: a word with no progress doc yet has
-    // never been reviewed, so — same rule as collection_detail_screen.dart
-    // and learn_session_notifier.dart — it counts as due; a word with a
-    // progress doc counts only if its FSRS due date has passed. This is NOT
-    // "not yet mastered" — a mastered card can still come due again.
-    final reviewedCountByCollection = <String, int>{};
-    final dueCountByCollection = <String, int>{};
-    for (final progress in allProgress) {
-      reviewedCountByCollection.update(
-        progress.collectionId,
-        (n) => n + 1,
-        ifAbsent: () => 1,
-      );
-      if (progress.isDue) {
-        dueCountByCollection.update(
-          progress.collectionId,
-          (n) => n + 1,
-          ifAbsent: () => 1,
-        );
-      }
-    }
-
+  Widget build(BuildContext context) {
+    // No FSRS progress data behind Home — "due" is approximated as the
+    // words in each collection that haven't been marked learned yet.
     final collectionsWithDueWords = <String>{};
-    final wordsDue = collections.fold<int>(0, (sum, c) {
-      final reviewed = reviewedCountByCollection[c.id] ?? 0;
-      final neverReviewed = (c.wordCount - reviewed).clamp(0, c.wordCount);
-      final due = (dueCountByCollection[c.id] ?? 0) + neverReviewed;
+    final wordsDue = mockCollections.fold<int>(0, (sum, c) {
+      final due = (c.wordCount - c.wordsLearned).clamp(0, c.wordCount);
       if (due > 0) collectionsWithDueWords.add(c.id);
       return sum + due;
     });
@@ -239,15 +165,15 @@ class _WordsDueSection extends ConsumerWidget {
   }
 }
 
-class _StatsSection extends ConsumerWidget {
+class _StatsSection extends StatelessWidget {
   const _StatsSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final collections = ref.watch(userCollectionsProvider).value ?? const [];
+  Widget build(BuildContext context) {
     final wordsLearned =
-        collections.fold<int>(0, (sum, c) => sum + c.wordsLearned);
-    final totalWords = collections.fold<int>(0, (sum, c) => sum + c.wordCount);
+        mockCollections.fold<int>(0, (sum, c) => sum + c.wordsLearned);
+    final totalWords =
+        mockCollections.fold<int>(0, (sum, c) => sum + c.wordCount);
     final masteredPercent =
         (Collection.fractionOf(wordsLearned, totalWords) * 100).round();
 
@@ -261,24 +187,21 @@ class _StatsSection extends ConsumerWidget {
   }
 }
 
-class _ContinueLearningSection extends ConsumerWidget {
+class _ContinueLearningSection extends StatelessWidget {
   const _ContinueLearningSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsAsync = ref.watch(userCollectionsProvider);
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
 
-    final recentCollections = collectionsAsync.whenData((collections) {
-      final sorted = collections.toList()
-        ..sort((a, b) {
-          final aTime = a.lastStudiedAt ?? a.updatedAt;
-          final bTime = b.lastStudiedAt ?? b.updatedAt;
-          return bTime.compareTo(aTime);
-        });
-      return sorted.take(2).toList();
-    });
+    final recentCollections = mockCollections.toList()
+      ..sort((a, b) {
+        final aTime = a.lastStudiedAt ?? a.updatedAt;
+        final bTime = b.lastStudiedAt ?? b.updatedAt;
+        return bTime.compareTo(aTime);
+      });
+    final topCollections = recentCollections.take(2).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,17 +235,7 @@ class _ContinueLearningSection extends ConsumerWidget {
         Column(
           spacing: AppSpacing.sm,
           children: [
-            ...recentCollections.when(
-              loading: () => [],
-              error: (_, _) => [
-                Text(
-                  'Couldn\'t load your collections',
-                  style: tt.bodyMedium?.copyWith(color: colors.textSecondary),
-                ),
-              ],
-              data: (collections) =>
-                  collections.map((c) => _ContinueLearningCard(collection: c)).toList(),
-            ),
+            ...topCollections.map((c) => _ContinueLearningCard(collection: c)),
             _NewCollectionButton(
               onTap: () => context.pushNamed(AppRoutes.createCollection.name),
             ),

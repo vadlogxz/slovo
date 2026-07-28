@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/vocabulary/di/vocabulary_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
+import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/feature/vocabulary/presentation/widgets/_.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
-class WordDetailScreen extends ConsumerWidget {
+class WordDetailScreen extends StatelessWidget {
   const WordDetailScreen({
     super.key,
     required this.collectionId,
@@ -18,10 +17,8 @@ class WordDetailScreen extends ConsumerWidget {
   final String wordId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final wordAsync = ref.watch(
-      wordByIdProvider((collectionId: collectionId, wordId: wordId)),
-    );
+  Widget build(BuildContext context) {
+    final word = wordById(collectionId, wordId);
     final colors = context.colors;
 
     return Scaffold(
@@ -31,23 +28,19 @@ class WordDetailScreen extends ConsumerWidget {
           children: [
             const _WordDetailHeader(),
             Expanded(
-              child: AsyncValueView(
-                value: wordAsync,
-                errorMessage: 'Couldn\'t load this word',
-                data: (word) => word == null
-                    ? const _WordNotFound()
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.md,
-                          0,
-                          AppSpacing.md,
-                          AppSpacing.md,
-                        ),
-                        child: _WordDetailBody(word: word),
+              child: word == null
+                  ? const _WordNotFound()
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.md,
+                        0,
+                        AppSpacing.md,
+                        AppSpacing.md,
                       ),
-              ),
+                      child: _WordDetailBody(word: word),
+                    ),
             ),
-            if (wordAsync.value != null) const _WordDetailBottomBar(),
+            if (word != null) const _WordDetailBottomBar(),
           ],
         ),
       ),

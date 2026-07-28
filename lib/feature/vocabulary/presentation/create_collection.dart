@@ -1,68 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/auth/di/auth_provider.dart';
-import 'package:slovo/feature/vocabulary/di/vocabulary_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection_color.dart';
 import 'package:slovo/feature/vocabulary/presentation/widgets/_.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
 enum _Visibility { private, sharedViaLink }
 
-class CreateCollection extends ConsumerStatefulWidget {
+class CreateCollection extends StatefulWidget {
   const CreateCollection({super.key});
 
   @override
-  ConsumerState<CreateCollection> createState() => _CreateCollectionState();
+  State<CreateCollection> createState() => _CreateCollectionState();
 }
 
-class _CreateCollectionState extends ConsumerState<CreateCollection> {
+class _CreateCollectionState extends State<CreateCollection> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   CollectionColor _selectedColor = CollectionColor.violet;
   _Visibility _visibility = _Visibility.private;
   bool _isLoading = false;
 
+  // No backend behind this screen — creating a collection is a visual stub
+  // that simulates a short save delay, then pops with the usual success copy.
   Future<void> _submit() async {
     final title = _nameController.text.trim();
     if (title.isEmpty) return;
 
-    final userId = ref.read(currentUserIdProvider);
-    if (userId == null) return;
-
     setState(() => _isLoading = true);
-    try {
-      await ref.read(collectionRepositoryProvider).createCollection(
-            userId: userId,
-            title: title,
-            description: _descriptionController.text.trim().isEmpty
-                ? null
-                : _descriptionController.text.trim(),
-            color: _selectedColor,
-            isPublic: _visibility == _Visibility.sharedViaLink,
-          );
-      if (!mounted) return;
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Collection "$title" created'),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Failed to create collection. Please try again.'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: context.colors.error,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Collection "$title" created'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override

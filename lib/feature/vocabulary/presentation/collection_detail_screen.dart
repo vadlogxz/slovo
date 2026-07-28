@@ -1,21 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
-import 'package:slovo/feature/auth/di/auth_provider.dart';
-import 'package:slovo/feature/study/di/study_provider.dart';
-import 'package:slovo/feature/study/domain/models/card_progress.dart';
-import 'package:slovo/feature/vocabulary/di/vocabulary_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
+import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/feature/vocabulary/presentation/widgets/_.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
-class CollectionDetailScreen extends ConsumerStatefulWidget {
+class CollectionDetailScreen extends StatefulWidget {
   const CollectionDetailScreen({
     super.key,
     required this.collectionId,
@@ -28,18 +24,19 @@ class CollectionDetailScreen extends ConsumerStatefulWidget {
   final String? lastAddedWordId;
 
   @override
-  ConsumerState<CollectionDetailScreen> createState() =>
+  State<CollectionDetailScreen> createState() =>
       _CollectionDetailScreenState();
 }
 
-class _CollectionDetailScreenState
-    extends ConsumerState<CollectionDetailScreen> {
+class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   bool _showBanner = false;
   Timer? _bannerTimer;
+  late List<Word> _words;
 
   @override
   void initState() {
     super.initState();
+    _words = List.of(wordsOf(widget.collectionId));
     if (widget.lastAddedWordTitle != null) {
       _showBanner = true;
       _bannerTimer = Timer(const Duration(seconds: 3), () {
@@ -54,19 +51,14 @@ class _CollectionDetailScreenState
     super.dispose();
   }
 
+  void _removeWord(String wordId) {
+    setState(() => _words.removeWhere((w) => w.id == wordId));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final collection = ref.watch(collectionByIdProvider(widget.collectionId));
-    final wordsAsync = ref.watch(collectionWordsProvider(widget.collectionId));
-    final progressAsync = ref.watch(
-      collectionProgressProvider(widget.collectionId),
-    );
+    final collection = collectionById(widget.collectionId);
     final colors = context.colors;
-
-    final progressByWordId = {
-      for (final p in progressAsync.value ?? const <CardProgress>[])
-        p.wordId: p,
-    };
 
     return Scaffold(
       backgroundColor: colors.surfaceSubtle,
@@ -75,21 +67,17 @@ class _CollectionDetailScreenState
           children: [
             _CollectionHeader(collection: collection),
             Expanded(
-              child: AsyncValueView(
-                value: wordsAsync,
-                errorMessage: 'Couldn\'t load this collection\'s words',
-                data: (words) => words.isEmpty
-                    ? _EmptyState(collectionId: widget.collectionId)
-                    : _WordsState(
-                        collectionId: widget.collectionId,
-                        collection: collection,
-                        words: words,
-                        progressByWordId: progressByWordId,
-                        showBanner: _showBanner,
-                        lastAddedWordTitle: widget.lastAddedWordTitle,
-                        lastAddedWordId: widget.lastAddedWordId,
-                      ),
-              ),
+              child: _words.isEmpty
+                  ? _EmptyState(collectionId: widget.collectionId)
+                  : _WordsState(
+                      collectionId: widget.collectionId,
+                      collection: collection,
+                      words: _words,
+                      onDeleteWord: _removeWord,
+                      showBanner: _showBanner,
+                      lastAddedWordTitle: widget.lastAddedWordTitle,
+                      lastAddedWordId: widget.lastAddedWordId,
+                    ),
             ),
           ],
         ),
@@ -100,56 +88,37 @@ class _CollectionDetailScreenState
 
 // ── Swipe-to-delete ──────────────────────────────────────────────────────────
 
-class _DismissibleWordItem extends ConsumerWidget {
+class _DismissibleWordItem extends StatelessWidget {
   const _DismissibleWordItem({
     required this.word,
     required this.collectionId,
     required this.isJustAdded,
-    this.progress,
+    required this.onDeleted,
   });
 
   final Word word;
   final String collectionId;
   final bool isJustAdded;
-  final CardProgress? progress;
+  final ValueChanged<String> onDeleted;
 
-  Future<bool> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  Future<bool> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => _DeleteWordDialog(term: word.term),
     );
     if (confirmed != true) return false;
-
-    final userId = ref.read(currentUserIdProvider);
-    if (userId == null) return false;
-
-    try {
-      await ref
-          .read(collectionRepositoryProvider)
-          .deleteWordFromCollection(
-            userId: userId,
-            collectionId: collectionId,
-            wordId: word.id,
-          );
-      return true;
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Couldn\'t delete "${word.term}"')),
-        );
-      }
-      return false;
-    }
+    onDeleted(word.id);
+    return true;
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final colors = context.colors;
 
     return Dismissible(
       key: ValueKey(word.id),
       direction: DismissDirection.endToStart,
-      confirmDismiss: (_) => _confirmDelete(context, ref),
+      confirmDismiss: (_) => _confirmDelete(context),
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -163,7 +132,6 @@ class _DismissibleWordItem extends ConsumerWidget {
       child: WordListItem(
         word: word,
         isJustAdded: isJustAdded,
-        progress: progress,
         onTap: () => context.pushNamed(
           AppRoutes.wordDetail.name,
           pathParameters: {'collectionId': collectionId, 'wordId': word.id},
@@ -342,7 +310,7 @@ class _WordsState extends StatelessWidget {
     required this.collectionId,
     required this.collection,
     required this.words,
-    required this.progressByWordId,
+    required this.onDeleteWord,
     required this.showBanner,
     required this.lastAddedWordTitle,
     required this.lastAddedWordId,
@@ -351,7 +319,7 @@ class _WordsState extends StatelessWidget {
   final String collectionId;
   final Collection? collection;
   final List<Word> words;
-  final Map<String, CardProgress> progressByWordId;
+  final ValueChanged<String> onDeleteWord;
   final bool showBanner;
   final String? lastAddedWordTitle;
   final String? lastAddedWordId;
@@ -360,14 +328,10 @@ class _WordsState extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
-    final dueCount = words
-        .where((w) => progressByWordId[w.id].isDueOrNew)
-        .length;
 
     return Column(
       children: [
-        if (collection != null)
-          _ProgressSummary(collection: collection!, dueCount: dueCount),
+        if (collection != null) _ProgressSummary(collection: collection!),
         AnimatedSize(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOut,
@@ -430,7 +394,7 @@ class _WordsState extends StatelessWidget {
               return _DismissibleWordItem(
                 word: word,
                 collectionId: collectionId,
-                progress: progressByWordId[word.id],
+                onDeleted: onDeleteWord,
                 isJustAdded:
                     showBanner &&
                     lastAddedWordId != null &&
@@ -466,16 +430,16 @@ class _WordsState extends StatelessWidget {
 // ── Progress summary + share row ────────────────────────────────────────────
 
 class _ProgressSummary extends StatelessWidget {
-  const _ProgressSummary({required this.collection, required this.dueCount});
+  const _ProgressSummary({required this.collection});
 
   final Collection collection;
-  final int dueCount;
 
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
     final percent = collection.masteryFraction;
+    final dueCount = collection.wordCount - collection.wordsLearned;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
