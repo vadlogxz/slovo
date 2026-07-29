@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/home/presentation/widgets/_.dart';
+import 'package:slovo/feature/profile/di/profile_provider.dart';
 import 'package:slovo/feature/profile/domain/models/user_profile.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
 import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
+import '../../auth/di/auth_provider.dart';
+
 // No profile backend behind Home — streak/daily-goal display a fixed mock
 // profile instead of reading a Firestore-backed provider.
-const _mockProfile = UserProfile(
-  uid: 'mock-user',
-  displayName: 'Alex',
-  streak: 4,
-  dailyGoalMinutes: 15,
-);
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -52,7 +51,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _HomeHeader extends StatelessWidget {
+class _HomeHeader extends ConsumerWidget {
   const _HomeHeader();
 
   String get _greeting {
@@ -63,7 +62,11 @@ class _HomeHeader extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    final userProfile = ref.watch(profileProvider);
+    final displayName = userProfile.displayName ?? currentUser?.name;
+
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
 
@@ -78,25 +81,26 @@ class _HomeHeader extends StatelessWidget {
                 _greeting,
                 style: tt.bodyMedium?.copyWith(color: colors.textSecondary),
               ),
-              Text(_mockProfile.displayName, style: tt.titleLarge),
+              Text(displayName ?? 'Unknown', style: tt.titleLarge),
             ],
           ),
         ),
-        StreakBadge(streak: _mockProfile.streak),
+        StreakBadge(streak: userProfile.streak),
       ],
     );
   }
 }
 
-class _DailyGoalSection extends StatelessWidget {
+class _DailyGoalSection extends ConsumerWidget {
   const _DailyGoalSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfile = ref.watch(profileProvider);
     final tt = Theme.of(context).textTheme;
     final colors = context.colors;
 
-    final goalMinutes = _mockProfile.dailyGoalMinutes;
+    final goalMinutes = userProfile.dailyGoalMinutes;
     const currentMinutes = 1;
     final progress = goalMinutes > 0 ? currentMinutes / goalMinutes : 0.0;
 

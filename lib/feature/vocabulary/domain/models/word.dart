@@ -1,8 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:slovo/core/utils/enum_from_name.dart';
 
-part 'word.freezed.dart';
-
 // ── Enums ─────────────────────────────────────────────────────────────────────
 
 enum WordType {
@@ -91,18 +89,18 @@ enum CefrLevel {
 }
 
 // ── Type-specific data classes ─────────────────────────────────────────────────
+class NounData{
 
-@freezed
-abstract class NounData with _$NounData {
-  const NounData._();
+  const NounData({
+    required this.gender,
+    this.plural,
+    this.genitive,
+  });
 
-  const factory NounData({
-    required NounGender gender,
-    // e.g. "Cafés", "Männer"
-    String? plural,
-    // e.g. "des Cafés", "des Mannes"
-    String? genitive,
-  }) = _NounData;
+  final NounGender gender;
+  final String? plural;
+  final String? genitive;
+
 
   factory NounData.fromMap(Map<String, dynamic> m) => NounData(
     gender: NounGender.fromString(m['gender'] as String?) ?? NounGender.das,
@@ -117,20 +115,22 @@ abstract class NounData with _$NounData {
   };
 }
 
-// Present-tense conjugation for irregular verbs.
-// Regular verbs don't need this stored — they follow standard rules.
-@freezed
-abstract class VerbConjugation with _$VerbConjugation {
-  const VerbConjugation._();
+class VerbConjugation{
+  const VerbConjugation({
+    required this.ich,
+    required this.du,
+    required this.erSieEs,
+    required this.wir,
+    required this.ihr,
+    required this.sieSie,
+  });
 
-  const factory VerbConjugation({
-    required String ich,
-    required String du,
-    required String erSieEs,
-    required String wir,
-    required String ihr,
-    required String sieSie,
-  }) = _VerbConjugation;
+  final String ich;
+  final String du;
+  final String erSieEs;
+  final String wir;
+  final String ihr;
+  final String sieSie;
 
   factory VerbConjugation.fromMap(Map<String, dynamic> m) => VerbConjugation(
     ich: m['ich'] as String,
@@ -151,26 +151,25 @@ abstract class VerbConjugation with _$VerbConjugation {
   };
 }
 
-@freezed
-abstract class VerbData with _$VerbData {
-  const VerbData._();
 
-  const factory VerbData({
-    // e.g. "aufgemacht", "gegangen"
-    required String partizip2,
-    // Perfekt: "habe aufgemacht" vs "bin gegangen"
-    required HilfsVerb hilfsVerb,
-    // "aufmachen" → isTrennbar: true, trennbarPrefix: "auf"
-    @Default(false) bool isTrennbar,
-    String? trennbarPrefix,
-    // Strong verb with vowel change (fahren, laufen, etc.)
-    @Default(false) bool isIrregular,
-    // Präteritum er/sie-form: "fuhr", "lief", "machte auf"
-    String? praeteritum,
-    // Only store conjugation for irregular verbs (du fährst, er fährt).
-    // Regular verbs follow standard rules and don't need this.
-    VerbConjugation? conjugation,
-  }) = _VerbData;
+class VerbData {
+  const VerbData({
+    required this.partizip2,
+    required this.hilfsVerb,
+    this.isTrennbar = false,
+    this.trennbarPrefix,
+    this.isIrregular = false,
+    this.praeteritum,
+    this.conjugation,
+  });
+
+  final String partizip2;
+  final HilfsVerb hilfsVerb;
+  final bool isTrennbar;
+  final String? trennbarPrefix;
+  final bool isIrregular;
+  final String? praeteritum;
+  final VerbConjugation? conjugation;
 
   factory VerbData.fromMap(Map<String, dynamic> m) => VerbData(
     partizip2: m['partizip2'] as String,
@@ -197,16 +196,15 @@ abstract class VerbData with _$VerbData {
   };
 }
 
-@freezed
-abstract class AdjectiveData with _$AdjectiveData {
-  const AdjectiveData._();
+class AdjectiveData{
 
-  const factory AdjectiveData({
-    // e.g. "schneller"
-    String? komparativ,
-    // e.g. "am schnellsten"
-    String? superlativ,
-  }) = _AdjectiveData;
+  const AdjectiveData({
+    this.komparativ,
+    this.superlativ,
+  });
+
+  final String? komparativ;
+  final String? superlativ;
 
   factory AdjectiveData.fromMap(Map<String, dynamic> m) => AdjectiveData(
     komparativ: m['komparativ'] as String?,
@@ -224,25 +222,31 @@ abstract class AdjectiveData with _$AdjectiveData {
 // Shared linguistic payload used by both Word (user copy) and DictionaryEntry
 // (global canon). Extracting it here eliminates duplicated fromMap/toMap logic.
 
-@freezed
-abstract class WordLinguistics with _$WordLinguistics {
-  const WordLinguistics._();
-
-  const factory WordLinguistics({
+class WordLinguistics{
+  const  WordLinguistics({
     // Primary translation or explanation.
-    required String definition,
+    required this.definition,
     // Example sentence in German.
-    String? example,
+    this.example,
     // English translation of [example]. Only present on entries generated
     // after this field was added — older entries leave it null.
-    String? exampleTranslation,
-    WordType? wordType,
-    CefrLevel? level,
+    this.exampleTranslation,
+    this.wordType,
+    this.level,
     // Exactly one of these is non-null, matching wordType.
-    NounData? nounData,
-    VerbData? verbData,
-    AdjectiveData? adjectiveData,
-  }) = _WordLinguistics;
+    this.nounData,
+    this.verbData,
+    this.adjectiveData,
+  });
+
+  final String definition;
+  final String? example;
+  final String? exampleTranslation;
+  final WordType? wordType;
+  final CefrLevel? level;
+  final NounData? nounData;
+  final VerbData? verbData;
+  final AdjectiveData? adjectiveData;
 
   factory WordLinguistics.fromMap(Map<String, dynamic> data) {
     final definition = data['definition'] as String?;
@@ -286,20 +290,23 @@ abstract class WordLinguistics with _$WordLinguistics {
 
 // ── Word ──────────────────────────────────────────────────────────────────────
 
-@freezed
-abstract class Word with _$Word {
-  const Word._();
-
-  const factory Word({
-    required String id,
-    required String collectionId,
-    // The German word or phrase as it appears in a dictionary.
-    required String term,
-    required WordLinguistics linguistics,
-    required DateTime createdAt,
+class Word{
+  const Word({
+    required this.id,
+    required this.collectionId,
+    required this.term,
+    required this.linguistics,
+    required this.createdAt,
     // Links back to the global dictionary entry this word was sourced from.
-    String? dictionaryEntryId,
-  }) = _Word;
+    this.dictionaryEntryId,
+  });
+
+  final String id;
+  final String collectionId;
+  final String term;
+  final WordLinguistics linguistics;
+  final DateTime createdAt;
+  final String? dictionaryEntryId;
 
   // Delegation getters — keep call sites ergonomic without exposing internals.
   String get definition => linguistics.definition;

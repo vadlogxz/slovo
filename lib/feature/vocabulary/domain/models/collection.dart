@@ -1,31 +1,37 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection_color.dart';
 
-part 'collection.freezed.dart';
+class Collection{
+  Collection({
+    required this.id,
+    required this.ownerId,
+    required this.title,
+    this.description,
+    this.color = CollectionColor.violet,
+    this.isPublic = false,
+    this.wordCount = 0,
+    this.wordsLearned = 0,
+    this.language = 'de',
+    this.tags = const <String>[],
+    this.lastStudiedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-@freezed
-abstract class Collection with _$Collection {
-  const Collection._();
+  final String id;
+  final String ownerId;
+  final String title;
+  String? description;
+  CollectionColor color;
+  bool isPublic;
+  int wordCount;
+  int wordsLearned;
+  String language;
+  List<String> tags;
+  DateTime? lastStudiedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  const factory Collection({
-    required String id,
-    required String ownerId,
-    required String title,
-    String? description,
-    @Default(CollectionColor.violet) CollectionColor color,
-    @Default(false) bool isPublic,
-    @Default(0) int wordCount,
-    @Default(0) int wordsLearned,
-    @Default('de') String language,
-    @Default(<String>[]) List<String> tags,
-    DateTime? lastStudiedAt,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) = _Collection;
-
-  /// Fraction of [wordCount] that's [wordsLearned], in [0, 1]. 0 when the
-  /// collection is empty — the single formula every mastery-percent display
-  /// in the app derives from, so they can't drift apart.
   double get masteryFraction => fractionOf(wordsLearned, wordCount);
 
   /// Safe divide-as-fraction: 0 when [total] is 0, otherwise clamped to

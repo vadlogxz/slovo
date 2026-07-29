@@ -7,24 +7,24 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  static InputDecorationTheme _inputTheme(Color fillColor) =>
+  static InputDecorationTheme _inputTheme(AppColors colors) =>
       InputDecorationTheme(
         filled: true,
-        fillColor: fillColor,
+        fillColor: colors.surfaceSubtle,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          borderSide: BorderSide(color: AppColors.light.outline),
+          borderSide: BorderSide(color: colors.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          borderSide: BorderSide(color: AppColors.light.outline),
+          borderSide: BorderSide(color: colors.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          borderSide: BorderSide(color: AppColors.light.primary, width: 1.5),
+          borderSide: BorderSide(color: colors.primary, width: 1.5),
         ),
-        hintStyle: TextStyle(color: AppColors.light.textMuted),
+        hintStyle: TextStyle(color: colors.textMuted),
       );
 
   static const _appBarTheme = AppBarTheme(
@@ -49,7 +49,7 @@ class AppTheme {
     ),
     textTheme: AppTextStyles.light,
     appBarTheme: _appBarTheme,
-    inputDecorationTheme: _inputTheme(AppColors.light.surfaceSubtle),
+    inputDecorationTheme: _inputTheme(AppColors.light),
     extensions: const [AppColors.light],
   );
 
@@ -69,7 +69,7 @@ class AppTheme {
     ),
     textTheme: AppTextStyles.dark,
     appBarTheme: _appBarTheme,
-    inputDecorationTheme: _inputTheme(AppColors.dark.surface),
+    inputDecorationTheme: _inputTheme(AppColors.dark),
     extensions: const [AppColors.dark],
   );
 }

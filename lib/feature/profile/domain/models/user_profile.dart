@@ -1,17 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:slovo/feature/onboarding/domain/models/daily_goal.dart';
 
-part 'user_profile.freezed.dart';
+class UserProfile {
+  UserProfile({
+    required this.uid,
+    this.displayName,
+    this.streak = 0,
+    this.lastActiveDate,
+    int? dailyGoalMinutes,
+  }) : dailyGoalMinutes = dailyGoalMinutes ?? DailyGoal.regular.minutes;
 
-@freezed
-abstract class UserProfile with _$UserProfile {
-  const factory UserProfile({
-    required String uid,
-    required String displayName,
-    @Default(0) int streak,
-    DateTime? lastActiveDate,
-    // Must match DailyGoal.regular.minutes (the "regular" onboarding goal) —
-    // freezed's @Default can't evaluate a cross-file enum field access, so
-    // this literal has to be kept in sync by hand.
-    @Default(10) int dailyGoalMinutes,
-  }) = _UserProfile;
+  final String uid;
+  String? displayName;
+  int streak;
+  DateTime? lastActiveDate;
+  final int dailyGoalMinutes;
 }
