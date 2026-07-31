@@ -1,4 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection_color.dart';
 
 class Collection{

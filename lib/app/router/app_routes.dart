@@ -11,11 +11,6 @@ abstract final class AppRoutes {
   static const homePath = '/home';
   static const splashPath = '/splash';
   static const onboardingPath = '/onboarding';
-  static const welcomePath = '/onboarding/welcome';
-  static const featuresPath = '/onboarding/features';
-  static const dailyGoalPath = '/onboarding/daily-goal';
-  static const getStartedPath = '/onboarding/get-started';
-  static const onboardingCompletePath = '/onboarding/complete';
 
   static const vocabularyPath = '/vocabulary';
   static const profilePath = '/profile';
@@ -27,14 +22,6 @@ abstract final class AppRoutes {
 
   static const splash = AppRoute(path: splashPath, name: 'splash');
   static const onboarding = AppRoute(path: onboardingPath, name: 'onboarding');
-  static const welcome = AppRoute(path: welcomePath, name: 'welcome');
-  static const features = AppRoute(path: featuresPath, name: 'features');
-  static const dailyGoal = AppRoute(path: dailyGoalPath, name: 'daily-goal');
-  static const getStarted = AppRoute(path: getStartedPath, name: 'get-started');
-  static const onboardingComplete = AppRoute(
-    path: onboardingCompletePath,
-    name: 'onboarding-complete',
-  );
 
   static const home = AppRoute(path: homePath, name: 'home');
   static const vocabulary = AppRoute(path: vocabularyPath, name: 'vocabulary');

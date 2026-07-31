@@ -14,18 +14,15 @@ class BrandLogo extends StatelessWidget {
     return Hero(
       tag: 'app-logo',
       child: Container(
-        width: 76,
-        height: 76,
+        width: 112,
+        height: 112,
         decoration: BoxDecoration(
-          gradient: AppGradients.primary,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: colors.primary.withAlpha(80),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          color: colors.primary,
+          border: Border.all(
+            color: colors.primaryDark,
+            width: 2,
+          )
         ),
         child: Center(
           child: AppIcon(

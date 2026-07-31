@@ -70,7 +70,7 @@ class _ProgressBarState extends State<ProgressBar>
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 400),
-              color: isComplete ? colors.success12 : colors.primary12,
+              color: isComplete ? colors.success.withValues(alpha: 0.08) : colors.primary12,
             ),
             AnimatedBuilder(
               animation: _animation,

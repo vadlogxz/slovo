@@ -245,7 +245,7 @@ class _AddedRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm + 2),
       decoration: BoxDecoration(
-        color: colors.success12,
+        color: colors.success.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(

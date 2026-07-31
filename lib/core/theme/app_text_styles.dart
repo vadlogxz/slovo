@@ -12,10 +12,10 @@ class AppTextStyles {
         titleLarge:     withColor(titleLarge,   AppColors.light.textPrimary),
         titleMedium:    withColor(titleMedium,  AppColors.light.textPrimary),
         titleSmall:     withColor(titleSmall,   AppColors.light.textPrimary),
-        bodyLarge:      withColor(bodyLarge,    AppColors.light.textPrimary),
+        bodyLarge:      withColor(bodyLarge,    AppColors.light.textSecondary),
         bodyMedium:     withColor(bodyMedium,   AppColors.light.textPrimary),
         bodySmall:      withColor(bodySmall,    AppColors.light.textMuted),
-        labelLarge:     withColor(labelLarge,   AppColors.light.textPrimary),
+        labelLarge:     withColor(labelLarge,   AppColors.light.textSecondary),
         labelMedium:    withColor(labelMedium,  AppColors.light.textMuted),
         labelSmall:     withColor(labelSmall,   AppColors.light.textMuted),
       );
@@ -39,18 +39,18 @@ class AppTextStyles {
       style.copyWith(color: color);
 
   // Headlines
-  static TextStyle get heading1 => GoogleFonts.bricolageGrotesque(
-        fontSize: 27,
+  static TextStyle get heading1 => GoogleFonts.fraunces(
+        fontSize: 44,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
       );
 
-  static TextStyle get heading2 => GoogleFonts.bricolageGrotesque(
-        fontSize: 24,
+  static TextStyle get heading2 => GoogleFonts.fraunces(
+        fontSize: 32,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle get heading3 => GoogleFonts.bricolageGrotesque(
+  static TextStyle get heading3 => GoogleFonts.fraunces(
         fontSize: 20,
         fontWeight: FontWeight.w600,
       );
@@ -91,7 +91,7 @@ class AppTextStyles {
       );
 
   // Labels
-  static TextStyle get labelLarge => GoogleFonts.bricolageGrotesque(
+  static TextStyle get labelLarge => GoogleFonts.outfit(
         fontSize: 16,
         fontWeight: FontWeight.w700,
       );

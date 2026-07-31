@@ -39,8 +39,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isLoggedIn && (isOnLoginPage || isOnSplashPage)) {
         if (!hasSeenOnboarding) {
           AppLogger.debug('User has not seen onboarding. Current path: ${state.matchedLocation}. Redirecting to onboarding: $isOnOnboardingPage');
-          return isOnOnboardingPage ? null : AppRoutes.welcomePath;
+          return isOnOnboardingPage ? null : AppRoutes.onboardingPath;
         }
+
         AppLogger.debug('User is authenticated. Redirecting to home.', tag: LogTag.router);
         return AppRoutes.homePath;
       }

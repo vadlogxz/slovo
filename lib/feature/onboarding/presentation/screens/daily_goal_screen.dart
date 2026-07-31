@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/onboarding/di/onboarding_provider.dart';
 import 'package:slovo/feature/onboarding/domain/models/_.dart';
@@ -107,7 +105,7 @@ class _DailyGoalScreenState extends ConsumerState<DailyGoalScreen>
                 fade: _button.fade,
                 slide: _button.slide,
                 child: AppButton(
-                  onTap: () => context.go(AppRoutes.onboardingCompletePath),
+                  onTap: (){},
                   text: 'Get Started',
                 ),
               ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/shared/mixins/_.dart';
@@ -106,7 +104,7 @@ class _FeaturesScreenState extends State<FeaturesScreen>
                 fade: _button.fade,
                 slide: _button.slide,
                 child: AppButton(
-                  onTap: () => context.go(AppRoutes.dailyGoalPath),
+                  onTap: (){},
                   text: 'Get Started',
                 ),
               ),

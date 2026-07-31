@@ -13,6 +13,10 @@ class OnboardingNotifier extends Notifier<OnboardingData> {
     state = state.copyWith(dailyGoal: dailyGoal);
   }
 
+  void setUserName(String userName) {
+    state = state.copyWith(userName: userName);
+  }
+
 
   Future<void> completeOnboarding() async {
     final prefs = ref.read(sharedPreferencesProvider);

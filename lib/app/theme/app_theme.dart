@@ -18,13 +18,13 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          borderSide: BorderSide(color: colors.outline),
+          borderSide: BorderSide(color: colors.outline, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          borderSide: BorderSide(color: colors.primary, width: 1.5),
+          borderSide: BorderSide(color: colors.primary, width: 2),
         ),
-        hintStyle: TextStyle(color: colors.textMuted),
+        hintStyle: TextStyle(color: colors.textSecondary),
       );
 
   static const _appBarTheme = AppBarTheme(
@@ -36,7 +36,7 @@ class AppTheme {
   static ThemeData get light => ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
-    scaffoldBackgroundColor: AppColors.light.surface,
+    scaffoldBackgroundColor: AppColors.light.surfaceSubtle,
     fontFamily: GoogleFonts.poppins().fontFamily,
     colorScheme: ColorScheme.light(
       primary: AppColors.light.primary,
@@ -56,7 +56,7 @@ class AppTheme {
   static ThemeData get dark => ThemeData(
     brightness: Brightness.dark,
     useMaterial3: true,
-    scaffoldBackgroundColor: AppColors.dark.surface,
+    scaffoldBackgroundColor: AppColors.dark.surfaceSubtle,
     fontFamily: GoogleFonts.poppins().fontFamily,
     colorScheme: ColorScheme.dark(
       primary: AppColors.dark.primary,

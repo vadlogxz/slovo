@@ -6,7 +6,6 @@ import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/home/presentation/widgets/_.dart';
 import 'package:slovo/feature/profile/di/profile_provider.dart';
-import 'package:slovo/feature/profile/domain/models/user_profile.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
 import 'package:slovo/feature/vocabulary/presentation/mock_vocabulary_data.dart';
 import 'package:slovo/shared/widgets/_.dart';

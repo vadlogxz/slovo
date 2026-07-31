@@ -1,4 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:slovo/core/utils/enum_from_name.dart';
 
 // ── Enums ─────────────────────────────────────────────────────────────────────

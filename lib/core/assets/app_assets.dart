@@ -18,4 +18,13 @@ abstract final class AppAssets {
   static const String lightingIcon = 'assets/icons/lightning.svg';
   static const String shareIcon = 'assets/icons/share.svg';
 
+
+  /// Onboarding
+  static const String flame = 'assets/icons/flame.svg';
+  static const String zap = 'assets/icons/zap.svg';
+  static const String coffee = 'assets/icons/coffee.svg';
+  static const String target = 'assets/icons/target.svg';
+
+  // Lottie animations
+  static const String hiHandAnimation = 'assets/animations/hi_hand.json';
 }

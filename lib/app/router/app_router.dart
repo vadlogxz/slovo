@@ -20,31 +20,7 @@ final appRoutes = <RouteBase>[
   GoRoute(
     path: AppRoutes.onboarding.path,
     name: AppRoutes.onboarding.name,
-    redirect: (context, state) => state.uri.path == AppRoutes.onboardingPath
-        ? AppRoutes.welcomePath
-        : null,
-    routes: [
-      GoRoute(
-        path: AppRoutes.welcome.segment,
-        name: AppRoutes.welcome.name,
-        builder: (context, state) => const WelcomeScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.features.segment,
-        name: AppRoutes.features.name,
-        builder: (context, state) => const FeaturesScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.dailyGoal.segment,
-        name: AppRoutes.dailyGoal.name,
-        builder: (context, state) => const DailyGoalScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.onboardingComplete.segment,
-        name: AppRoutes.onboardingComplete.name,
-        builder: (context, state) => const OnboardingCompleteScreen(),
-      ),
-    ],
+    builder: (context, state) => const OnboardingScreen(),
   ),
   GoRoute(
     path: AppRoutes.login.path,

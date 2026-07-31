@@ -15,6 +15,7 @@ class AppButton extends StatefulWidget {
   final Color? pressedOverlayColor;
   final double pressedScale;
   final bool isLoading;
+  final bool isDisabled;
 
   // Suppresses the default brand drop-shadow for secondary/flat buttons
   // (e.g. a muted-background action next to a primary CTA). Equivalent to
@@ -38,6 +39,7 @@ class AppButton extends StatefulWidget {
     this.pressedScale = 0.97,
     this.isLoading = false,
     this.flat = false,
+    this.isDisabled = false,
   });
 
   @override
@@ -48,29 +50,6 @@ class _AppButtonState extends State<AppButton> {
   bool _isPressed = false;
 
   static const _duration = Duration(milliseconds: 80);
-
-  static const _flatShadow = [BoxShadow(color: Colors.transparent)];
-
-  // Glow tint derived from AppGradients.primary's own second stop, so the
-  // default drop-shadow always matches the brand gradient instead of a
-  // hand-copied hex value that could drift from it.
-  List<BoxShadow> get _shadowResting {
-    final tint = AppGradients.primary.colors[1];
-    return [
-      BoxShadow(
-        color: tint.withAlpha(0x99),
-        blurRadius: 8,
-        spreadRadius: -2,
-        offset: const Offset(0, 4),
-      ),
-      BoxShadow(
-        color: tint.withAlpha(0x46),
-        blurRadius: 24,
-        spreadRadius: -6,
-        offset: const Offset(0, 14),
-      ),
-    ];
-  }
 
   List<BoxShadow> get _shadowPressed {
     final tint = AppGradients.primary.colors[1];
@@ -102,6 +81,7 @@ class _AppButtonState extends State<AppButton> {
         scale: _isPressed ? widget.pressedScale : 1.0,
         duration: _duration,
         curve: Curves.easeOut,
+        // Shadow and background color are animated separately to avoid the shadow being clipped by the button's border radius.
         child: AnimatedContainer(
           duration: _duration,
           curve: Curves.easeOut,
@@ -109,23 +89,36 @@ class _AppButtonState extends State<AppButton> {
             borderRadius: BorderRadius.circular(
               widget.borderRadius ?? AppSpacing.md,
             ),
-            border: widget.border,
-            boxShadow: _isPressed
-                ? (widget.pressedBoxShadow != null
-                      ? [widget.pressedBoxShadow!]
-                      : (widget.flat ? _flatShadow : _shadowPressed))
-                : (widget.boxShadow != null
-                      ? [widget.boxShadow!]
-                      : (widget.flat ? _flatShadow : _shadowResting)),
+            boxShadow: widget.isDisabled
+                ? null
+                : _isPressed
+                    ? widget.pressedBoxShadow != null
+                        ? [widget.pressedBoxShadow!]
+                        : _shadowPressed
+                    : widget.boxShadow != null
+                        ? [widget.boxShadow!]
+                        : [
+                            BoxShadow(
+                              color: colors.primary.withAlpha(0x33),
+                              blurRadius: 4,
+                              spreadRadius: -2,
+                              offset: const Offset(0, 2),
+                            ),
+                            BoxShadow(
+                              color: colors.primary.withAlpha(0x1A),
+                              blurRadius: 8,
+                              spreadRadius: -6,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(
-              widget.borderRadius != null
-                  ? widget.borderRadius!
-                  : AppSpacing.md,
+              widget.borderRadius ?? AppSpacing.md,
             ),
             child: Stack(
               children: [
+                // Background color
                 Container(
                   width: double.infinity,
                   padding:
@@ -135,10 +128,11 @@ class _AppButtonState extends State<AppButton> {
                         horizontal: AppSpacing.lg,
                       ),
                   decoration: BoxDecoration(
-                    gradient: widget.backgroundColor != null
-                        ? null
-                        : AppGradients.primary,
-                    color: widget.backgroundColor,
+                    color: widget.isDisabled ? colors.outline : widget.backgroundColor ?? colors.primary,
+                    border: widget.border ?? Border.all(color: widget.isDisabled ? colors.outline : colors.primaryDark, width: 2),
+                    borderRadius: BorderRadius.circular(
+                      widget.borderRadius ?? AppSpacing.md,
+                    ),
                   ),
                   child: Center(
                     child: widget.isLoading
@@ -164,6 +158,7 @@ class _AppButtonState extends State<AppButton> {
                               ),
                   ),
                 ),
+                // Pressed overlay
                 Positioned.fill(
                   child: AnimatedOpacity(
                     opacity: _isPressed ? 1.0 : 0.0,
