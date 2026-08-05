@@ -22,8 +22,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!isSplashDone) return null;
 
       final authState = ref.read(authStateProvider);
-      // final hasSeenOnboarding = ref.read(onboardingCompletedProvider);
-      final hasSeenOnboarding = false;
+      final hasSeenOnboarding = ref.read(onboardingCompletedProvider);
 
       if (authState.isLoading) return null;
 

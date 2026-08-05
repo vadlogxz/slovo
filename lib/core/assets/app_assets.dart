@@ -25,6 +25,14 @@ abstract final class AppAssets {
   static const String coffee = 'assets/icons/coffee.svg';
   static const String target = 'assets/icons/target.svg';
 
+  // Day time icons
+  static const String morning = 'assets/icons/morning.svg';
+  static const String afternoon = 'assets/icons/afternoon.svg';
+  static const String evening = 'assets/icons/evening.svg';
+  static const String night = 'assets/icons/night.svg';
+
   // Lottie animations
   static const String hiHandAnimation = 'assets/animations/hi_hand.json';
+  static const String targetAnimation = 'assets/animations/target.json';
+  static const String bellAnimation = 'assets/animations/bell.json';
 }

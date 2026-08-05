@@ -12,6 +12,7 @@ class _Palette {
   static const surfaceViolet = Color(0xFFE8E7E9);
   static const surfaceAccentTint = Color(0xFFF0EBFF);
   static const surfaceAccentBorder = Color(0x335B2EE8); // violet @ 20%
+  static const surfaceIconBadge = Color(0xFFF0EBE3);
 
   static const teal = Color(0xFF00C9A7);
   static const yellow = Color(0xFFFFE566);
@@ -53,6 +54,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.surfaceElevated,
     required this.surfaceAccent,
     required this.surfaceAccentTint,
+    required this.surfaceIconBadge,
     required this.outline,
     required this.shadow,
     required this.success,
@@ -82,6 +84,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color surfaceElevated;
   final Color surfaceAccent;
   final Color surfaceAccentTint;
+  final Color surfaceIconBadge;
   final Color outline;
   final Color shadow;
 
@@ -113,6 +116,7 @@ class AppColors extends ThemeExtension<AppColors> {
     surfaceElevated: _Palette.grey100,
     surfaceAccent: _Palette.surfaceAccentBorder,
     surfaceAccentTint: _Palette.surfaceAccentTint,
+    surfaceIconBadge: _Palette.surfaceIconBadge,
     outline: _Palette.grey200,
     shadow: _Palette.shadow10,
     success: _Palette.teal,
@@ -141,6 +145,7 @@ class AppColors extends ThemeExtension<AppColors> {
     surfaceElevated: _Palette.dark800,
     surfaceAccent: _Palette.surfaceAccentBorder,
     surfaceAccentTint: _Palette.surfaceAccentTint,
+    surfaceIconBadge: _Palette.surfaceIconBadge,
     outline: _Palette.dark800,
     shadow: _Palette.shadow20,
     success: _Palette.teal,
@@ -169,6 +174,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? surfaceElevated,
     Color? surfaceAccent,
     Color? surfaceAccentTint,
+    Color? surfaceIconBadge,
     Color? outline,
     Color? shadow,
     Color? success,
@@ -194,6 +200,7 @@ class AppColors extends ThemeExtension<AppColors> {
     surfaceElevated: surfaceElevated ?? this.surfaceElevated,
     surfaceAccent: surfaceAccent ?? this.surfaceAccent,
     surfaceAccentTint: surfaceAccentTint ?? this.surfaceAccentTint,
+    surfaceIconBadge: surfaceIconBadge ?? this.surfaceIconBadge,
     outline: outline ?? this.outline,
     shadow: shadow ?? this.shadow,
     success: success ?? this.success,
@@ -224,6 +231,7 @@ class AppColors extends ThemeExtension<AppColors> {
       surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
       surfaceAccent: Color.lerp(surfaceAccent, other.surfaceAccent, t)!,
       surfaceAccentTint: Color.lerp(surfaceAccentTint, other.surfaceAccentTint, t)!,
+      surfaceIconBadge: Color.lerp(surfaceIconBadge, other.surfaceIconBadge, t)!,
       outline: Color.lerp(outline, other.outline, t)!,
       shadow: Color.lerp(shadow, other.shadow, t)!,
       success: Color.lerp(success, other.success, t)!,

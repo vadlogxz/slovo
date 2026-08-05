@@ -1,0 +1,19 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+  <!-- sun rays -->
+  <line x1="50" y1="8"  x2="50" y2="18"/>
+  <line x1="26.5" y1="18" x2="33" y2="24.5"/>
+  <line x1="73.5" y1="18" x2="67" y2="24.5"/>
+  <line x1="10" y1="42" x2="20" y2="42"/>
+  <line x1="90" y1="42" x2="80" y2="42"/>
+
+  <!-- sun (top half, sitting on horizon) -->
+  <path d="M 28 58 A 22 22 0 0 1 72 58"/>
+
+  <!-- horizon line, broken where the sun sits -->
+  <line x1="8" y1="58" x2="40" y2="58"/>
+  <line x1="60" y1="58" x2="92" y2="58"/>
+
+  <!-- reflection waves: single centered lines, narrowing -->
+  <line x1="24.5" y1="70" x2="75.5" y2="70"/>
+  <line x1="41.5" y1="82" x2="58.5" y2="82"/>
+</svg>

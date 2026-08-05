@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:slovo/core/storage/shared_preferences_provider.dart';
 import 'package:slovo/feature/onboarding/domain/models/_.dart';
+import 'package:slovo/feature/profile/di/profile_provider.dart';
 
 class OnboardingNotifier extends Notifier<OnboardingData> {
 
@@ -17,14 +18,24 @@ class OnboardingNotifier extends Notifier<OnboardingData> {
     state = state.copyWith(userName: userName);
   }
 
+  void setReminderTime(ReminderTime reminderTime) {
+    state = state.copyWith(reminderTime: reminderTime);
+  }
+
 
   Future<void> completeOnboarding() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString('daily_goal', state.dailyGoal.name);
+    await prefs.setString('reminder_time', state.reminderTime.name);
     await prefs.setBool('onboardingCompleted', true);
-    // onboardingCompletedProvider has no reactive dependency of its own —
-    // invalidate it so the router redirect sees the fresh value instead of
-    // the cached pre-onboarding `false`.
+
+    final userProfile = await ref.read(profileProvider.future);
+    final profileRepository = ref.read(profileRepositoryProvider);
+    await profileRepository.updateUserProfile(userProfile.copyWith(
+      displayName: state.userName,
+      dailyGoalMinutes: state.dailyGoal.minutes
+    ));
+
+    ref.invalidate(profileProvider);
     ref.invalidate(onboardingCompletedProvider);
   }
 
