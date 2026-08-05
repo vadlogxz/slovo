@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/app/shell/models/tab_item.dart';
@@ -80,33 +78,25 @@ class _BottomNavState extends State<BottomNav>
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(AppRadius.lg)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          height: widget.height,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.all(Radius.circular(AppRadius.lg)),
-            border: Border.all(
-              color: colors.outline,
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colors.shadow,
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ]
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final tabWidth = constraints.maxWidth / AppTabs.items.length;
-              final indicatorX = widget.currentIndex * tabWidth;
+    return Container(
+      height: widget.height,
+      padding: EdgeInsets.only(bottom: AppSpacing.md),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: colors.outline, width: 2),
+        ),
 
-              return Stack(
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final tabWidth = constraints.maxWidth / AppTabs.items.length;
+          final indicatorX = widget.currentIndex * tabWidth;
+
+          return Align(
+            alignment: AlignmentGeometry.bottomCenter,
+            child: SizedBox(
+              height: 40,
+              child: Stack(
                 children: [
                   Row(
                     children: List.generate(AppTabs.items.length, (i) {
@@ -119,7 +109,8 @@ class _BottomNavState extends State<BottomNav>
                           child: GestureDetector(
                             onTap: () => widget.onTap(i),
                             behavior: HitTestBehavior.opaque,
-                            child: Center(
+                            child: Align(
+                              alignment: AlignmentGeometry.topCenter,
                               child: NavIcon(
                                 path: item.icon,
                                 selected: selected,
@@ -139,12 +130,12 @@ class _BottomNavState extends State<BottomNav>
                       indicatorX +
                           (tabWidth / 2) -
                           (_widthAnimation.value / 2),
-                      bottom: 8,
+                      bottom: 0,
                       child: Container(
                         width: _widthAnimation.value,
-                        height: 3,
+                        height: 5,
                         decoration: BoxDecoration(
-                          gradient: AppGradients.bluePurple,
+                          color: colors.primary,
                           borderRadius: BorderRadius.circular(2),
                           boxShadow: [
                             BoxShadow(
@@ -158,10 +149,10 @@ class _BottomNavState extends State<BottomNav>
                     ),
                   ),
                 ],
-              );
-            },
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
