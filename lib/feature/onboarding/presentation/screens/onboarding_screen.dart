@@ -208,7 +208,7 @@ class _WelcomeState extends State<_Welcome>
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: context.colors.rating.withValues(alpha: 0.2),
+                    color: AppAccents.rating.withValues(alpha: 0.2),
                   ),
                 ),
               ),
@@ -221,7 +221,7 @@ class _WelcomeState extends State<_Welcome>
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: context.colors.error.withValues(alpha: 0.2),
+                      color: AppAccents.coral.withValues(alpha: 0.2),
                     ),
                   ),
                 ),
@@ -233,7 +233,7 @@ class _WelcomeState extends State<_Welcome>
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: context.colors.success.withValues(alpha: 0.2),
+                    color: AppAccents.mint.withValues(alpha: 0.2),
                   ),
                 ),
               ),
@@ -426,13 +426,13 @@ class _DailyGoalItemState extends ConsumerState<_DailyGoalItem> {
   Color _getGoalColor(DailyGoal goal) {
     switch (goal) {
       case DailyGoal.casual:
-        return context.colors.warning;
+        return AppAccents.flame;
       case DailyGoal.regular:
         return context.colors.primary;
       case DailyGoal.serious:
-        return context.colors.success;
+        return AppAccents.mint;
       case DailyGoal.intense:
-        return context.colors.error;
+        return AppAccents.coral;
     }
   }
 
@@ -713,7 +713,7 @@ class _ReminderTimeItemState extends ConsumerState<_ReminderTimeItem> {
                       path: widget.reminderTime.icon,
                       size: 36,
                       color: isSelected
-                          ? context.colors.rating
+                          ? AppAccents.rating
                           : context.colors.textPrimary,
                     ),
                   ),
@@ -746,7 +746,7 @@ class _ReminderTimeItemState extends ConsumerState<_ReminderTimeItem> {
                         width: 26,
                         height: 26,
                         decoration: BoxDecoration(
-                          color: context.colors.rating,
+                          color: AppAccents.rating,
                           shape: BoxShape.circle,
                         ),
                         child: Center(

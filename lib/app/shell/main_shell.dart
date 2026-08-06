@@ -13,29 +13,31 @@ class AppShell extends StatelessWidget {
     final currentTab = AppTabs.items[navigationShell.currentIndex];
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(child: navigationShell),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: BottomNav(
-              height: 80,
-              currentIndex: navigationShell.currentIndex,
-              onTap: (value) {
-                if (value < 0 || value >= AppTabs.items.length) {
-                  AppLogger.warning('Invalid tab index: $value');
-                  return;
-                }
-                final selectedTab = AppTabs.items[value];
-                if (selectedTab.routePath != currentTab.routePath) {
-                  navigationShell.goBranch(value);
-                }
-              },
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(child: navigationShell),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: BottomNav(
+                height: 80,
+                currentIndex: navigationShell.currentIndex,
+                onTap: (value) {
+                  if (value < 0 || value >= AppTabs.items.length) {
+                    AppLogger.warning('Invalid tab index: $value');
+                    return;
+                  }
+                  final selectedTab = AppTabs.items[value];
+                  if (selectedTab.routePath != currentTab.routePath) {
+                    navigationShell.goBranch(value);
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

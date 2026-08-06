@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:slovo/core/theme/_.dart';
 
-class ProgressBar extends StatefulWidget {
-  const ProgressBar({
+class AppProgressBar extends StatefulWidget {
+  const AppProgressBar({
     super.key,
     required this.value,
     this.height = 6.0,
-    this.gradient = AppGradients.primary,
+    this.backgroundColor,
   });
 
   final double value;
   final double height;
-  final LinearGradient gradient;
+  final Color? backgroundColor;
 
   @override
-  State<ProgressBar> createState() => _ProgressBarState();
+  State<AppProgressBar> createState() => _AppProgressBarState();
 }
 
-class _ProgressBarState extends State<ProgressBar>
+class _AppProgressBarState extends State<AppProgressBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late Tween<double> _tween;
@@ -38,7 +38,7 @@ class _ProgressBarState extends State<ProgressBar>
   }
 
   @override
-  void didUpdateWidget(ProgressBar oldWidget) {
+  void didUpdateWidget(AppProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value) {
       _tween.begin = _animation.value;
@@ -55,13 +55,6 @@ class _ProgressBarState extends State<ProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final isComplete = widget.value >= 1.0;
-
-    final activeGradient = isComplete
-        ? LinearGradient(colors: [colors.success.withValues(alpha: 0.7), colors.success])
-        : widget.gradient;
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: SizedBox(
@@ -70,7 +63,7 @@ class _ProgressBarState extends State<ProgressBar>
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 400),
-              color: isComplete ? colors.success.withValues(alpha: 0.08) : colors.primary12,
+              color: Colors.white.withValues(alpha: 0.2),
             ),
             AnimatedBuilder(
               animation: _animation,
@@ -79,7 +72,7 @@ class _ProgressBarState extends State<ProgressBar>
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeOut,
-                  decoration: BoxDecoration(gradient: activeGradient),
+                  decoration: BoxDecoration(color: widget.backgroundColor),
                 ),
               ),
             ),
