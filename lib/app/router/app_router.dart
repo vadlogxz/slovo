@@ -6,6 +6,7 @@ import 'package:slovo/feature/auth/presentation/login_screen.dart';
 import 'package:slovo/feature/home/presentation/home_screen.dart';
 import 'package:slovo/feature/onboarding/presentation/screens/_.dart';
 import 'package:slovo/feature/profile/presentation/profile_screen.dart';
+import 'package:slovo/feature/vocabulary/presentation/add_collection_screen.dart';
 import 'package:slovo/feature/vocabulary/presentation/vocabulary_screen.dart';
 
 final appRoutes = <RouteBase>[
@@ -23,6 +24,11 @@ final appRoutes = <RouteBase>[
     path: AppRoutes.login.path,
     name: AppRoutes.login.name,
     builder: (context, state) => const LoginScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.createCollection.path,
+    name: AppRoutes.createCollection.name,
+    builder: (context, state) => const CreateCollectionScreen(),
   ),
   StatefulShellRoute(
     builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
@@ -44,6 +50,7 @@ final appRoutes = <RouteBase>[
             path: AppRoutes.vocabulary.path,
             name: AppRoutes.vocabulary.name,
             builder: (context, state) => const VocabularyScreen(),
+
           )
         ],
       ),

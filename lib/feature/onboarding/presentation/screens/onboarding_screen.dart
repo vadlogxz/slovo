@@ -208,7 +208,7 @@ class _WelcomeState extends State<_Welcome>
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppAccents.rating.withValues(alpha: 0.2),
+                    color: AppAccents.yellow.withValues(alpha: 0.2),
                   ),
                 ),
               ),
@@ -271,7 +271,9 @@ class _WelcomeState extends State<_Welcome>
               slide: _subtitle.slide,
               child: Text(
                 'Flashcards, exercises, articles, cases — all in one place.',
-                style: tt.bodyLarge,
+                style: tt.bodyLarge?.copyWith(
+                  color: context.colors.textSecondary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -426,7 +428,7 @@ class _DailyGoalItemState extends ConsumerState<_DailyGoalItem> {
   Color _getGoalColor(DailyGoal goal) {
     switch (goal) {
       case DailyGoal.casual:
-        return AppAccents.flame;
+        return AppAccents.orange;
       case DailyGoal.regular:
         return context.colors.primary;
       case DailyGoal.serious:
@@ -713,7 +715,7 @@ class _ReminderTimeItemState extends ConsumerState<_ReminderTimeItem> {
                       path: widget.reminderTime.icon,
                       size: 36,
                       color: isSelected
-                          ? AppAccents.rating
+                          ? AppAccents.yellow
                           : context.colors.textPrimary,
                     ),
                   ),
@@ -746,7 +748,7 @@ class _ReminderTimeItemState extends ConsumerState<_ReminderTimeItem> {
                         width: 26,
                         height: 26,
                         decoration: BoxDecoration(
-                          color: AppAccents.rating,
+                          color: AppAccents.yellow,
                           shape: BoxShape.circle,
                         ),
                         child: Center(

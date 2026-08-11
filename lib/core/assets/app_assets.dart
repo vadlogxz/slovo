@@ -31,6 +31,23 @@ abstract final class AppAssets {
   static const String evening = 'assets/icons/evening.svg';
   static const String night = 'assets/icons/night.svg';
 
+  // Collection icons
+  static const String collectionNone = 'assets/icons/collection_none_outline.svg';
+  static const String collectionBook = 'assets/icons/collection_book_outline.svg';
+  static const String collectionStar = 'assets/icons/collection_star_outline.svg';
+  static const String collectionHeart = 'assets/icons/collection_heart_outline.svg';
+  static const String collectionFlag = 'assets/icons/collection_flag_outline.svg';
+  static const String collectionSchool = 'assets/icons/collection_school_outline.svg';
+  static const String collectionTravel = 'assets/icons/collection_travel_outline.svg';
+  static const String collectionWork = 'assets/icons/collection_work_outline.svg';
+  static const String collectionFood = 'assets/icons/collection_food_outline.svg';
+  static const String collectionMusic = 'assets/icons/collection_music_outline.svg';
+  static const String collectionMovie = 'assets/icons/collection_movie_outline.svg';
+  static const String collectionSport = 'assets/icons/collection_sport_outline.svg';
+  static const String collectionNature = 'assets/icons/collection_nature_outline.svg';
+  static const String collectionScience = 'assets/icons/collection_science_outline.svg';
+  static const String collectionHome = 'assets/icons/collection_home_outline.svg';
+
   // Lottie animations
   static const String hiHandAnimation = 'assets/animations/hi_hand.json';
   static const String targetAnimation = 'assets/animations/target.json';

@@ -5,6 +5,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/profile/di/profile_provider.dart';
+import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -108,13 +109,13 @@ class _DailyStreak extends ConsumerWidget {
         bottom: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppAccents.rating,
+        color: AppAccents.yellow,
         borderRadius: BorderRadius.circular(AppSpacing.lg),
         border: Border.all(width: 2, color: context.colors.primaryDark),
       ),
       child: Row(
         children: [
-          AppIcon(path: AppAssets.flame, color: AppAccents.flame),
+          AppIcon(path: AppAssets.flame, color: AppAccents.orange),
           SizedBox(width: AppSpacing.sm),
           Text(
             dailyStreak.toString(),
@@ -203,7 +204,7 @@ class _DailyProgress extends ConsumerWidget {
                     child: AppProgressBar(
                       value: progress,
                       height: 8,
-                      backgroundColor: AppAccents.rating,
+                      backgroundColor: AppAccents.yellow,
                     ),
                   ),
                 ),
@@ -217,13 +218,13 @@ class _DailyProgress extends ConsumerWidget {
                     height: 36,
                     decoration: BoxDecoration(
                       color: progress >= 1
-                          ? AppAccents.rating.withValues(alpha: 0.4)
+                          ? AppAccents.yellow.withValues(alpha: 0.4)
                           : Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.star,
-                      color: progress >= 1 ? AppAccents.rating : Colors.white,
+                      color: progress >= 1 ? AppAccents.yellow : Colors.white,
                     ),
                   ),
                 ),
@@ -253,7 +254,7 @@ class _StartLearningButton extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppAccents.rating,
+              color: AppAccents.yellow,
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.play_arrow, color: context.colors.primaryDark),
@@ -283,14 +284,23 @@ class _StartLearningButton extends StatelessWidget {
   }
 }
 
-class _StatsSection extends StatelessWidget {
+class _StatsSection extends ConsumerWidget {
   const _StatsSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collectionsCount = ref.watch(userCollectionsProvider).maybeWhen(
+      data: (collections) => collections.length,
+      orElse: () => 0,
+    );
+    final dailyGoal = ref.watch(profileProvider).maybeWhen(
+      data: (profile) => profile.dailyGoalMinutes,
+      orElse: () => 0,
+    );
     return Row(
       children: [
         Expanded(
+          //TODO: Implement logic to calculate all user words across collections
           child: _StatCard(
             title: 'My words',
             value: '120',
@@ -302,25 +312,26 @@ class _StatsSection extends StatelessWidget {
         Expanded(
           child: _StatCard(
             title: 'Collections',
-            value: '8',
+            value: collectionsCount.toString(),
             icon: Icons.folder,
             color: AppAccents.mint,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
         Expanded(
+          //TODO: Implement logic to calculate the percentage of words learned from the total words in all collections
           child: _StatCard(
             title: 'Stats',
             value: '91%',
             icon: Icons.stacked_bar_chart,
-            color: AppAccents.flame,
+            color: AppAccents.orange,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
         Expanded(
           child: _StatCard(
             title: 'Daily goal',
-            value: '20m',
+            value: '${dailyGoal}m',
             icon: Icons.access_time,
             color: AppAccents.blue,
           ),

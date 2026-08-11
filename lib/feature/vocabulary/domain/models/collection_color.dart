@@ -1,13 +1,15 @@
 import 'package:slovo/core/utils/enum_from_name.dart';
 
 enum CollectionColor {
-  teal,
-  violet,
-  pink,
-  gold,
-  green,
+  yellow,
+  orange,
+  mint,
+  coral,
+  blue,
   purple;
 
   static CollectionColor fromString(String? value) =>
-      enumFromName(values, value) ?? CollectionColor.violet;
+      enumFromName(values, value) ?? CollectionColor.purple;
+
+
 }

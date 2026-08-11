@@ -14,6 +14,7 @@ class DictionaryEntry {
   const DictionaryEntry({
     required this.id,
     required this.term,
+    required this.searchKey,
     required this.status,
     required this.createdAt,
     this.errorMessage,
@@ -22,6 +23,7 @@ class DictionaryEntry {
 
   final String id;
   final String term;
+  final String searchKey;
   final GenerationStatus status;
   final DateTime createdAt;
   final String? errorMessage;
@@ -62,7 +64,17 @@ class DictionaryEntry {
   factory DictionaryEntry.pending(String id, String term) => DictionaryEntry(
     id: id,
     term: term,
+    searchKey: normalizeSearchKey(term),
     status: GenerationStatus.pending,
     createdAt: DateTime.now(),
   );
+
+  static String normalizeSearchKey(String raw){
+    final parts = raw.trim().toLowerCase().split(RegExp(r'\s+'));
+    final articles = {'der', 'die', 'das'};
+    if(parts.length == 2 && articles.contains(parts.first)){
+      return parts[1];
+    }
+    return parts.join(' ');
+  }
 }

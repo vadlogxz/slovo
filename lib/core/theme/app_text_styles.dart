@@ -12,7 +12,7 @@ class AppTextStyles {
         titleLarge:     withColor(titleLarge,   AppColors.light.textPrimary),
         titleMedium:    withColor(titleMedium,  AppColors.light.textPrimary),
         titleSmall:     withColor(titleSmall,   AppColors.light.textPrimary),
-        bodyLarge:      withColor(bodyLarge,    AppColors.light.textSecondary),
+        bodyLarge:      withColor(bodyLarge,    AppColors.light.textPrimary),
         bodyMedium:     withColor(bodyMedium,   AppColors.light.textPrimary),
         bodySmall:      withColor(bodySmall,    AppColors.light.textMuted),
         labelLarge:     withColor(labelLarge,   AppColors.light.textSecondary),

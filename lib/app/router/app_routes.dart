@@ -17,6 +17,7 @@ abstract final class AppRoutes {
   static const loginPath = '/login';
   static const createCollectionPath = '/create-collection';
   static const collectionDetailPath = '/collection/:collectionId';
+  static const addWordPath = '/add-word';
   static const wordDetailPath = '/collection/:collectionId/word/:wordId';
   static const learnSessionPath = '/collection/:collectionId/learn';
 
@@ -35,6 +36,7 @@ abstract final class AppRoutes {
     path: collectionDetailPath,
     name: 'collection-detail',
   );
+  static const addWord = AppRoute(path: addWordPath, name: 'add-word');
   static const wordDetail = AppRoute(path: wordDetailPath, name: 'word-detail');
   static const learnSession = AppRoute(
     path: learnSessionPath,
