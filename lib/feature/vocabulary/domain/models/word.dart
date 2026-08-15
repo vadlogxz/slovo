@@ -101,13 +101,13 @@ class NounData{
   final String? genitive;
 
 
-  factory NounData.fromMap(Map<String, dynamic> m) => NounData(
+  factory NounData.fromJson(Map<String, dynamic> m) => NounData(
     gender: NounGender.fromString(m['gender'] as String?) ?? NounGender.das,
     plural: m['plural'] as String?,
     genitive: m['genitive'] as String?,
   );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     'gender': gender.name,
     if (plural != null) 'plural': plural,
     if (genitive != null) 'genitive': genitive,
@@ -131,7 +131,7 @@ class VerbConjugation{
   final String ihr;
   final String sieSie;
 
-  factory VerbConjugation.fromMap(Map<String, dynamic> m) => VerbConjugation(
+  factory VerbConjugation.fromJson(Map<String, dynamic> m) => VerbConjugation(
     ich: m['ich'] as String,
     du: m['du'] as String,
     erSieEs: m['erSieEs'] as String,
@@ -140,7 +140,7 @@ class VerbConjugation{
     sieSie: m['sieSie'] as String,
   );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     'ich': ich,
     'du': du,
     'erSieEs': erSieEs,
@@ -170,7 +170,7 @@ class VerbData {
   final String? praeteritum;
   final VerbConjugation? conjugation;
 
-  factory VerbData.fromMap(Map<String, dynamic> m) => VerbData(
+  factory VerbData.fromJson(Map<String, dynamic> m) => VerbData(
     partizip2: m['partizip2'] as String,
     hilfsVerb: HilfsVerb.fromString(m['hilfsVerb'] as String? ?? 'haben'),
     isTrennbar: m['isTrennbar'] as bool? ?? false,
@@ -178,20 +178,20 @@ class VerbData {
     isIrregular: m['isIrregular'] as bool? ?? false,
     praeteritum: m['praeteritum'] as String?,
     conjugation: m['conjugation'] != null
-        ? VerbConjugation.fromMap(
+        ? VerbConjugation.fromJson(
             Map<String, dynamic>.from(m['conjugation'] as Map),
           )
         : null,
   );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     'partizip2': partizip2,
     'hilfsVerb': hilfsVerb.name,
     'isTrennbar': isTrennbar,
     if (trennbarPrefix != null) 'trennbarPrefix': trennbarPrefix,
     'isIrregular': isIrregular,
     if (praeteritum != null) 'praeteritum': praeteritum,
-    if (conjugation != null) 'conjugation': conjugation!.toMap(),
+    if (conjugation != null) 'conjugation': conjugation!.toJson(),
   };
 }
 
@@ -205,12 +205,12 @@ class AdjectiveData{
   final String? komparativ;
   final String? superlativ;
 
-  factory AdjectiveData.fromMap(Map<String, dynamic> m) => AdjectiveData(
+  factory AdjectiveData.fromJson(Map<String, dynamic> m) => AdjectiveData(
     komparativ: m['komparativ'] as String?,
     superlativ: m['superlativ'] as String?,
   );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     if (komparativ != null) 'komparativ': komparativ,
     if (superlativ != null) 'superlativ': superlativ,
   };
@@ -219,7 +219,7 @@ class AdjectiveData{
 // ── WordLinguistics ───────────────────────────────────────────────────────────
 //
 // Shared linguistic payload used by both Word (user copy) and DictionaryEntry
-// (global canon). Extracting it here eliminates duplicated fromMap/toMap logic.
+// (global canon). Extracting it here eliminates duplicated fromMap/toJson logic.
 
 class WordLinguistics{
   const  WordLinguistics({
@@ -247,11 +247,11 @@ class WordLinguistics{
   final VerbData? verbData;
   final AdjectiveData? adjectiveData;
 
-  factory WordLinguistics.fromMap(Map<String, dynamic> data) {
+  factory WordLinguistics.fromJson(Map<String, dynamic> data) {
     final definition = data['definition'] as String?;
     if (definition == null) {
       throw FormatException(
-        'WordLinguistics.fromMap: a "ready" entry is missing its required '
+        'WordLinguistics.fromJson: a "ready" entry is missing its required '
         '"definition" field (data: $data)',
       );
     }
@@ -262,28 +262,28 @@ class WordLinguistics{
       wordType: WordType.fromString(data['wordType'] as String?),
       level: CefrLevel.fromString(data['level'] as String?),
       nounData: data['nounData'] != null
-          ? NounData.fromMap(Map<String, dynamic>.from(data['nounData'] as Map))
+          ? NounData.fromJson(Map<String, dynamic>.from(data['nounData'] as Map))
           : null,
       verbData: data['verbData'] != null
-          ? VerbData.fromMap(Map<String, dynamic>.from(data['verbData'] as Map))
+          ? VerbData.fromJson(Map<String, dynamic>.from(data['verbData'] as Map))
           : null,
       adjectiveData: data['adjectiveData'] != null
-          ? AdjectiveData.fromMap(
+          ? AdjectiveData.fromJson(
               Map<String, dynamic>.from(data['adjectiveData'] as Map),
             )
           : null,
     );
   }
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     'definition': definition,
     if (example != null) 'example': example,
     if (exampleTranslation != null) 'exampleTranslation': exampleTranslation,
     if (wordType != null) 'wordType': wordType!.name,
     if (level != null) 'level': level!.name,
-    if (nounData != null) 'nounData': nounData!.toMap(),
-    if (verbData != null) 'verbData': verbData!.toMap(),
-    if (adjectiveData != null) 'adjectiveData': adjectiveData!.toMap(),
+    if (nounData != null) 'nounData': nounData!.toJson(),
+    if (verbData != null) 'verbData': verbData!.toJson(),
+    if (adjectiveData != null) 'adjectiveData': adjectiveData!.toJson(),
   };
 }
 

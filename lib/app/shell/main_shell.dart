@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/app/shell/widgets/bottom_nav.dart';
 import 'package:slovo/core/logging/app_logger.dart';
+import 'package:slovo/core/theme/_.dart';
+import 'package:slovo/feature/vocabulary/presentation/widgets/add_word_sheet.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -18,7 +19,14 @@ class AppShell extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () {
-          context.push(AppRoutes.addWord.path);
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => const AddWordSheet(),
+            showDragHandle: true,
+            backgroundColor: context.colors.surface,
+
+          );
         },
         child: Icon(Icons.add),
       ),
@@ -36,9 +44,7 @@ class AppShell extends StatelessWidget {
           }
         },
       ),
-      body: SafeArea(
-        child: navigationShell,
-      ),
+      body: SafeArea(child: navigationShell),
     );
   }
 }
@@ -56,4 +62,3 @@ class _BState extends State<B> {
     return const Placeholder();
   }
 }
-

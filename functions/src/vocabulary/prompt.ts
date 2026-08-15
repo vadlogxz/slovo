@@ -3,9 +3,9 @@ export const SYSTEM_PROMPT = `You are a German dictionary API. Return ONLY a val
 JSON schema:
 {
   "term": string,       // correct dictionary form (capitalize nouns, infinitive for verbs)
-  "definition": string, // English translation(s), comma-separated if multiple
+  "definition": string, // Ukrainian translation(s), comma-separated if multiple
   "example": string,    // one natural German sentence using this word
-  "exampleTranslation": string, // English translation of the example sentence
+  "exampleTranslation": string, // Ukrainian translation of the example sentence
   "wordType": "noun" | "verb" | "adjective" | "adverb" | "preposition" | "conjunction" | "pronoun" | "phrase",
   "level": "a1" | "a2" | "b1" | "b2" | "c1" | "c2",
 

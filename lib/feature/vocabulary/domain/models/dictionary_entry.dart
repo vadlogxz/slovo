@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slovo/core/utils/enum_from_name.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 
@@ -68,6 +69,29 @@ class DictionaryEntry {
     status: GenerationStatus.pending,
     createdAt: DateTime.now(),
   );
+
+  factory DictionaryEntry.fromJson(Map<String, dynamic> json, String id){
+    return DictionaryEntry(
+      id: id,
+      term: json['term'] as String,
+      searchKey: json['searchKey'] as String,
+      status: GenerationStatus.fromString(json['status'] as String?),
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      errorMessage: json['errorMessage'] as String?,
+      linguistics: json['definition'] != null ? WordLinguistics.fromJson(json) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'term': term,
+      'searchKey': searchKey,
+      'status': status.name,
+      'createdAt': Timestamp.fromDate(createdAt),
+      if (errorMessage != null) 'errorMessage': errorMessage,
+      if (linguistics != null) ...linguistics!.toJson(),
+    };
+  }
 
   static String normalizeSearchKey(String raw){
     final parts = raw.trim().toLowerCase().split(RegExp(r'\s+'));

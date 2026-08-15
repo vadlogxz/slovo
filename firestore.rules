@@ -16,14 +16,14 @@ service cloud.firestore {
       allow create: if request.auth != null
           && request.resource.data.status == 'pending'
           && request.resource.data.keys().hasOnly(
-               ['term', 'termLower', 'status', 'createdAt']);
+               ['term', 'searchKey', 'status', 'createdAt']);
       // Clients may reset a failed or stuck-pending entry back to 'pending'
       // (re-triggers generateWord) but cannot otherwise touch the doc —
       // writing 'ready'/errorMessage/linguistic data stays backend-only.
       allow update: if request.auth != null
           && request.resource.data.status == 'pending'
           && request.resource.data.keys().hasOnly(
-               ['term', 'termLower', 'status', 'createdAt'])
+               ['term', 'searchKey', 'status', 'createdAt'])
           && (
                resource.data.status == 'failed'
                || (resource.data.status == 'pending'

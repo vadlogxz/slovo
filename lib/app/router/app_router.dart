@@ -6,8 +6,8 @@ import 'package:slovo/feature/auth/presentation/login_screen.dart';
 import 'package:slovo/feature/home/presentation/home_screen.dart';
 import 'package:slovo/feature/onboarding/presentation/screens/_.dart';
 import 'package:slovo/feature/profile/presentation/profile_screen.dart';
-import 'package:slovo/feature/vocabulary/presentation/add_collection_screen.dart';
-import 'package:slovo/feature/vocabulary/presentation/vocabulary_screen.dart';
+import 'package:slovo/feature/vocabulary/presentation/screens/add_collection_screen.dart';
+import 'package:slovo/feature/vocabulary/presentation/screens/vocabulary_screen.dart';
 
 final appRoutes = <RouteBase>[
   GoRoute(
