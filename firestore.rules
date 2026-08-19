@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global dictionary — read-only for authenticated users, written by backend only.
+    // Clients write a pending stub; Cloud Functions fill in AI-generated data.
+    match /dictionary/{entryId} {
+      allow read: if request.auth != null;
+      // Allow clients to create a pending entry (status must be 'pending').
+      // Writing 'ready'/'failed' + linguistic data is reserved for Cloud
+      // Functions (service account, bypasses rules).
+      allow create: if request.auth != null
+          && request.resource.data.status == 'pending'
+          && request.resource.data.keys().hasOnly(
+               ['term', 'termLower', 'status', 'createdAt']);
+      // Clients may reset a failed or stuck-pending entry back to 'pending'
+      // (re-triggers generateWord) but cannot otherwise touch the doc —
+      // writing 'ready'/errorMessage/linguistic data stays backend-only.
+      allow update: if request.auth != null
+          && request.resource.data.status == 'pending'
+          && request.resource.data.keys().hasOnly(
+               ['term', 'termLower', 'status', 'createdAt'])
+          && (
+               resource.data.status == 'failed'
+               || (resource.data.status == 'pending'
+                   && request.time > resource.data.createdAt + duration.value(2, 'm'))
+             );
+      allow delete: if false;
+    }
+
+    // User data — only the owner can read/write
+    match /users/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+
+    match /users/{uid}/collections/{collectionId} {
+      allow read, write: if request.auth.uid == uid;
+    }
+
+    match /users/{uid}/collections/{collectionId}/words/{wordId} {
+      allow read, write: if request.auth.uid == uid;
+    }
+
+    match /users/{uid}/progress/{wordId} {
+      allow read, write: if request.auth.uid == uid;
+    }
+  }
+}

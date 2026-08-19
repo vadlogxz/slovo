@@ -1,0 +1,4 @@
+  {
+    "GOOGLE_WEB_CLIENT_ID": "your-web-client-id-here",
+    "API_BASE_URL": "https://your-api-base-url-here/"
+  }

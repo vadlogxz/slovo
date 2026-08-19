@@ -1,0 +1,68 @@
+import 'package:slovo/core/utils/enum_from_name.dart';
+import 'package:slovo/feature/vocabulary/domain/models/word.dart';
+
+enum GenerationStatus {
+  pending,
+  ready,
+  failed;
+
+  static GenerationStatus fromString(String? value) =>
+      enumFromName(values, value) ?? GenerationStatus.pending;
+}
+
+class DictionaryEntry {
+  const DictionaryEntry({
+    required this.id,
+    required this.term,
+    required this.status,
+    required this.createdAt,
+    this.errorMessage,
+    this.linguistics,
+  });
+
+  final String id;
+  final String term;
+  final GenerationStatus status;
+  final DateTime createdAt;
+  final String? errorMessage;
+
+  // Populated only when status == ready.
+  final WordLinguistics? linguistics;
+
+  bool get isReady => status == GenerationStatus.ready;
+  bool get isPending => status == GenerationStatus.pending;
+  bool get isFailed => status == GenerationStatus.failed;
+
+  // Delegation getters — valid only when isReady.
+  String? get definition => linguistics?.definition;
+  String? get example => linguistics?.example;
+  String? get exampleTranslation => linguistics?.exampleTranslation;
+  WordType? get wordType => linguistics?.wordType;
+  CefrLevel? get level => linguistics?.level;
+  NounData? get nounData => linguistics?.nounData;
+  VerbData? get verbData => linguistics?.verbData;
+  AdjectiveData? get adjectiveData => linguistics?.adjectiveData;
+
+  // Converts to Word for adding to a user's collection.
+  // [wordId] must be a unique ID for this word within the collection's words
+  // subcollection (the repository uses the dictionary entry's own id, so
+  // re-adding the same term resolves to the same doc instead of a duplicate).
+  Word? toWord({required String wordId, required String collectionId}) {
+    if (!isReady || linguistics == null) return null;
+    return Word(
+      id: wordId,
+      collectionId: collectionId,
+      dictionaryEntryId: id,
+      term: term,
+      linguistics: linguistics!,
+      createdAt: DateTime.now(),
+    );
+  }
+
+  factory DictionaryEntry.pending(String id, String term) => DictionaryEntry(
+    id: id,
+    term: term,
+    status: GenerationStatus.pending,
+    createdAt: DateTime.now(),
+  );
+}

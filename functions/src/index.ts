@@ -1,0 +1,1 @@
+export { generateWord } from "./vocabulary/generateWord";

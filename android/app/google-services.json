@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "560248660929",
+    "project_id": "slovo-91017",
+    "storage_bucket": "slovo-91017.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560248660929:android:c519f30fb9f58283ba0540",
+        "android_client_info": {
+          "package_name": "com.example.slovo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560248660929-mfurkuuv5okj0athcb0b863u0t65ejas.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.slovo",
+            "certificate_hash": "0134292d1f93fb251d1199f9874f82c5d6ca87fd"
+          }
+        },
+        {
+          "client_id": "560248660929-jov4i7bs09s8eeho8qg6oe72e5062i2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0THqpb96bSKJhqVT5lNOx32O54SOrYvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560248660929-jov4i7bs09s8eeho8qg6oe72e5062i2r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "560248660929-peodlsu47htob7g8vc9em05a579q7o2j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.slovo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
