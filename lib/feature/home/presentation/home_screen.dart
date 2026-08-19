@@ -144,7 +144,7 @@ class _DailyProgress extends ConsumerWidget {
         ? minutesCompleted / dailyGoalMinutes
         : 0.0;
 
-    //TODO: Implement logic to calculate progress based on user's daily goal and completed minutes
+    //TODO: Implement logic to calculate progress based on user's stats
     // Now we are using a placeholder value for demonstration purposes.
     // Also need to implement animation when user complete the daily goal and show a star icon with a glow effect
 
@@ -299,13 +299,18 @@ class _StatsSection extends ConsumerWidget {
       data: (profile) => profile.dailyGoalMinutes,
       orElse: () => 0,
     );
+
+    final totalWordsCount = ref.watch(userCollectionsProvider).maybeWhen(
+      data: (collections) => collections.fold(0, (sum, collection) => sum + collection.wordCount),
+      orElse: () => 0,
+    );
+
     return Row(
       children: [
         Expanded(
-          //TODO: Implement logic to calculate all user words across collections
           child: _StatCard(
             title: 'My words',
-            value: '120',
+            value: totalWordsCount.toString(),
             icon: Icons.bookmark,
             color: context.colors.primary,
           ),
