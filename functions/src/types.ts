@@ -43,6 +43,7 @@ export type GenerationStatus = "pending" | "ready" | "failed";
 
 export interface DictionaryEntry {
   term: string;
+  searchKey: string;
   status: GenerationStatus;
   createdAt: FirebaseFirestore.Timestamp;
   errorMessage?: string;

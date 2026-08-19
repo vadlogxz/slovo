@@ -14,6 +14,19 @@ const VALID_WORD_TYPES: readonly WordType[] = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+const GERMAN_ARTICLES = new Set(["der", "die", "das"]);
+
+// Mirrors DictionaryEntry.normalizeSearchKey on the Dart side — must stay in
+// sync, or a term corrected here (e.g. AI fixes a user's typo) drifts out of
+// sync with the key client-side lookups search by.
+function normalizeSearchKey(raw: string): string {
+  const parts = raw.trim().toLowerCase().split(/\s+/);
+  if (parts.length === 2 && GERMAN_ARTICLES.has(parts[0])) {
+    return parts[1];
+  }
+  return parts.join(" ");
+}
+
 function stripNulls(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== null && v !== undefined)
@@ -21,7 +34,7 @@ function stripNulls(obj: Record<string, unknown>): Record<string, unknown> {
 }
 
 function isCompleteWordData(
-  data: Omit<DictionaryEntry, "status" | "createdAt">
+  data: Omit<DictionaryEntry, "status" | "createdAt" | "searchKey">
 ): boolean {
   if (
     typeof data.definition !== "string" ||
@@ -47,7 +60,7 @@ function isCompleteWordData(
 async function callOpenAI(
   client: OpenAI,
   term: string
-): Promise<Omit<DictionaryEntry, "status" | "createdAt">> {
+): Promise<Omit<DictionaryEntry, "status" | "createdAt" | "searchKey">> {
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     response_format: { type: "json_object" },
@@ -114,8 +127,13 @@ export const generateWord = onDocumentWritten(
 
       // createdAt is intentionally left untouched — it records when the
       // entry was first requested, not when generation finished.
+      //
+      // searchKey is recomputed from the (possibly AI-corrected) term —
+      // without this, a typo like "Hause" would generate a "Haus" entry
+      // that's only ever findable by searching the original typo.
       const entry = stripNulls({
         ...(wordData as Record<string, unknown>),
+        searchKey: normalizeSearchKey(wordData.term),
         status: "ready",
       });
 
