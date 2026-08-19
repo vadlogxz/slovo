@@ -102,17 +102,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ? null
                     : () => _signIn(_SignInProvider.apple, authRepository.signInWithApple),
                 isLoading: _loading == _SignInProvider.apple,
-                backgroundColor: cs.inverseSurface,
-                borderRadius: AppSpacing.md,
-                boxShadow: BoxShadow(
-                  color: colors.shadow,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-                pressedBoxShadow: BoxShadow(
-                  color: colors.shadow,
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
+                style: AppButtonStyle(
+                  background: cs.inverseSurface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.shadow,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  pressedBoxShadow: [
+                    BoxShadow(
+                      color: colors.shadow,
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -143,18 +148,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onTap: _loading != null
                     ? null
                     : () => _signIn(_SignInProvider.google, authRepository.signInWithGoogle),
-                backgroundColor: colors.surface,
-                border: Border.all(color: colors.outline),
-                borderRadius: AppSpacing.md,
-                boxShadow: BoxShadow(
-                  color: colors.shadow,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-                pressedBoxShadow: BoxShadow(
-                  color: colors.shadow,
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
+                style: AppButtonStyle(
+                  background: colors.surface,
+                  border: Border.all(color: colors.outline),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.shadow,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  pressedBoxShadow: [
+                    BoxShadow(
+                      color: colors.shadow,
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

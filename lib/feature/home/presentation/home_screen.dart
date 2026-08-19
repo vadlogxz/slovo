@@ -245,7 +245,9 @@ class _StartLearningButton extends StatelessWidget {
     return AppButton(
       // TODO: Set onTap to navigate to the learning screen
       onTap: () {},
-      backgroundColor: context.colors.primaryDark,
+      style: AppButtonStyle.primary(
+        context.colors,
+      ).copyWith(background: context.colors.primaryDark),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         spacing: AppSpacing.md,

@@ -1,141 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:slovo/core/theme/_.dart';
+import 'package:slovo/shared/widgets/app_button_style.dart';
+import 'package:slovo/shared/widgets/app_pressable.dart';
 
-class AppButton extends StatefulWidget {
+export 'app_button_style.dart';
+
+class AppButton extends StatelessWidget {
+  const AppButton({
+    super.key,
+    this.onTap,
+    this.text,
+    this.child,
+    this.style,
+    this.width,
+    this.borderRadius,
+    this.contentPadding,
+    this.pressedScale = 0.97,
+    this.isLoading = false,
+    this.isDisabled = false,
+  });
+
   final void Function()? onTap;
   final String? text;
-  final Color? backgroundColor;
-  final TextStyle? textStyle;
-  final double? borderRadius;
-  final BoxShadow? boxShadow;
-  final BoxShadow? pressedBoxShadow;
-  final BoxBorder? border;
   final Widget? child;
+
+  /// How the button looks. Defaults to [AppButtonStyle.primary] when null —
+  /// pass [AppButtonStyle.outline] or a custom [AppButtonStyle] to change it.
+  final AppButtonStyle? style;
+  final double? width;
+  final double? borderRadius;
   final EdgeInsetsGeometry? contentPadding;
-  final Color? pressedOverlayColor;
   final double pressedScale;
   final bool isLoading;
   final bool isDisabled;
 
-  // Suppresses the default brand drop-shadow for secondary/flat buttons
-  // (e.g. a muted-background action next to a primary CTA). Equivalent to
-  // passing boxShadow/pressedBoxShadow: BoxShadow(color: Colors.transparent)
-  // — set this instead of repeating that at every call site.
-  final bool flat;
-
-  const AppButton({
-    super.key,
-    required this.onTap,
-    this.text,
-    this.backgroundColor,
-    this.textStyle,
-    this.borderRadius,
-    this.boxShadow,
-    this.pressedBoxShadow,
-    this.border,
-    this.child,
-    this.contentPadding,
-    this.pressedOverlayColor,
-    this.pressedScale = 0.97,
-    this.isLoading = false,
-    this.flat = false,
-    this.isDisabled = false,
-  });
-
-  @override
-  State<AppButton> createState() => _AppButtonState();
-}
-
-class _AppButtonState extends State<AppButton> {
-  bool _isPressed = false;
-
   static const _duration = Duration(milliseconds: 80);
-
-  List<BoxShadow> get _shadowPressed {
-    final tint = AppGradients.primary.colors[1];
-    return [
-      BoxShadow(
-        color: tint.withAlpha(0x33),
-        blurRadius: 4,
-        spreadRadius: -2,
-        offset: const Offset(0, 2),
-      ),
-      BoxShadow(
-        color: tint.withAlpha(0x1A),
-        blurRadius: 8,
-        spreadRadius: -6,
-        offset: const Offset(0, 4),
-      ),
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: _isPressed ? widget.pressedScale : 1.0,
-        duration: _duration,
-        curve: Curves.easeOut,
-        // Shadow and background color are animated separately to avoid the shadow being clipped by the button's border radius.
-        child: AnimatedContainer(
+    final activeStyle = style ?? AppButtonStyle.primary(colors);
+    final radius = BorderRadius.circular(borderRadius ?? AppSpacing.md);
+
+    return AppPressable(
+      onTap: onTap,
+      pressedScale: pressedScale,
+      duration: _duration,
+      builder: (context, isPressed) {
+        // Each visual property is resolved independently, in order of
+        // priority: disabled overrides everything, then pressed, then the
+        // style's own default.
+        final shadow = isDisabled
+            ? null
+            : isPressed
+            ? activeStyle.pressedBoxShadow ?? activeStyle.boxShadow
+            : activeStyle.boxShadow;
+
+        final background = isDisabled
+            ? activeStyle.disabledBackground ?? colors.outline
+            : activeStyle.background;
+
+        final border = isDisabled
+            ? activeStyle.disabledBorder ??
+                  Border.all(color: colors.outline, width: 2)
+            : activeStyle.border;
+
+        return AnimatedContainer(
           duration: _duration,
           curve: Curves.easeOut,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              widget.borderRadius ?? AppSpacing.md,
-            ),
-            boxShadow: widget.isDisabled
-                ? null
-                : _isPressed
-                    ? widget.pressedBoxShadow != null
-                        ? [widget.pressedBoxShadow!]
-                        : _shadowPressed
-                    : widget.boxShadow != null
-                        ? [widget.boxShadow!]
-                        : [
-                            BoxShadow(
-                              color: colors.primary.withAlpha(0x33),
-                              blurRadius: 4,
-                              spreadRadius: -2,
-                              offset: const Offset(0, 2),
-                            ),
-                            BoxShadow(
-                              color: colors.primary.withAlpha(0x1A),
-                              blurRadius: 8,
-                              spreadRadius: -6,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-          ),
+          decoration: BoxDecoration(borderRadius: radius, boxShadow: shadow),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(
-              widget.borderRadius ?? AppSpacing.md,
-            ),
+            borderRadius: radius,
             child: Stack(
               children: [
                 // Background color
                 Container(
-                  width: double.infinity,
+                  width: width ?? double.infinity,
                   padding:
-                      widget.contentPadding ??
+                      contentPadding ??
                       const EdgeInsets.symmetric(
                         vertical: AppSpacing.md,
                         horizontal: AppSpacing.lg,
                       ),
                   decoration: BoxDecoration(
-                    color: widget.isDisabled ? colors.outline : widget.backgroundColor ?? colors.primary,
-                    border: widget.border ?? Border.all(color: widget.isDisabled ? colors.outline : colors.primaryDark, width: 2),
-                    borderRadius: BorderRadius.circular(
-                      widget.borderRadius ?? AppSpacing.md,
-                    ),
+                    color: background,
+                    border: border,
+                    borderRadius: radius,
                   ),
                   child: Center(
-                    child: widget.isLoading
+                    child: isLoading
                         ? SizedBox(
                             width: 20,
                             height: 20,
@@ -144,11 +97,11 @@ class _AppButtonState extends State<AppButton> {
                               color: colors.textOnBrand,
                             ),
                           )
-                        : widget.child ??
+                        : child ??
                               Text(
-                                widget.text ?? 'Button',
+                                text ?? 'Button',
                                 style:
-                                    widget.textStyle ??
+                                    activeStyle.textStyle ??
                                     Theme.of(
                                       context,
                                     ).textTheme.labelLarge?.copyWith(
@@ -161,18 +114,18 @@ class _AppButtonState extends State<AppButton> {
                 // Pressed overlay
                 Positioned.fill(
                   child: AnimatedOpacity(
-                    opacity: _isPressed ? 1.0 : 0.0,
+                    opacity: isPressed ? 1.0 : 0.0,
                     duration: _duration,
                     child: Container(
-                      color: widget.pressedOverlayColor ?? colors.shadow,
+                      color: activeStyle.pressedOverlayColor ?? colors.shadow,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
