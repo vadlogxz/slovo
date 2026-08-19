@@ -1,0 +1,100 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6F4FE"/>
+      <stop offset="1" stop-color="#E3DFFB"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0.15" y1="0.1" x2="0.9" y2="0.95">
+      <stop offset="0" stop-color="#B9A6FB"/>
+      <stop offset="0.45" stop-color="#6741E0"/>
+      <stop offset="1" stop-color="#3A26B8"/>
+    </linearGradient>
+    <radialGradient id="lensGrad" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#F5F3FE"/>
+      <stop offset="1" stop-color="#DAD4F9"/>
+    </radialGradient>
+    <linearGradient id="handleGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4B3AC4"/>
+      <stop offset="1" stop-color="#221768"/>
+    </linearGradient>
+    <linearGradient id="qmarkGrad" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#B29CFC"/>
+      <stop offset="1" stop-color="#7C57F2"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DAD4F8"/>
+      <stop offset="1" stop-color="#CFC8F5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- soft shadow under the magnifier -->
+  <ellipse cx="292" cy="432" rx="150" ry="15" fill="#D9D4F5" opacity="0.55"/>
+
+  <!-- ============ DOCUMENT CARD ============ -->
+  <g transform="rotate(11 330 290)">
+    <rect x="205" y="105" width="255" height="330" rx="26" fill="url(#cardGrad)"/>
+    <rect x="232" y="148" width="182" height="20" rx="10" fill="url(#barGrad)"/>
+    <circle cx="392" cy="158" r="8" fill="none" stroke="#6741E0" stroke-width="3.5"/>
+    <line x1="398" y1="164" x2="405" y2="171" stroke="#6741E0" stroke-width="3.5" stroke-linecap="round"/>
+    <rect x="232" y="182" width="130" height="14" rx="7" fill="url(#barGrad)" opacity="0.9"/>
+    <rect x="232" y="210" width="200" height="14" rx="7" fill="url(#barGrad)" opacity="0.85"/>
+    <rect x="232" y="238" width="190" height="14" rx="7" fill="url(#barGrad)" opacity="0.8"/>
+    <rect x="232" y="266" width="205" height="14" rx="7" fill="url(#barGrad)" opacity="0.75"/>
+    <rect x="232" y="294" width="150" height="14" rx="7" fill="url(#barGrad)" opacity="0.7"/>
+    <rect x="232" y="322" width="175" height="14" rx="7" fill="url(#barGrad)" opacity="0.65"/>
+  </g>
+
+  <!-- ============ DECORATIVE DASHED ORBIT ============ -->
+  <ellipse cx="232" cy="366" rx="118" ry="76" transform="rotate(-6 232 366)"
+        fill="none" stroke="#D6D0F6" stroke-width="5" stroke-linecap="round" stroke-dasharray="9 15"/>
+
+  <!-- ============ SPARKLES ============ -->
+  <g fill="#D9D3F8">
+    <path transform="translate(462,158) scale(1.0)" d="M0,-16 C1.5,-5 3,-1.5 16,0 C3,1.5 1.5,5 0,16 C-1.5,5 -3,1.5 -16,0 C-3,-1.5 -1.5,-5 0,-16 Z"/>
+    <path transform="translate(100,253) scale(0.6)" d="M0,-16 C1.5,-5 3,-1.5 16,0 C3,1.5 1.5,5 0,16 C-1.5,5 -3,1.5 -16,0 C-3,-1.5 -1.5,-5 0,-16 Z"/>
+  </g>
+
+  <!-- ============ QUESTION MARKS ============ -->
+  <g transform="translate(105,93) rotate(-8) scale(1.05)">
+    <path d="M4,17 C3,6 13,-3 25,1 C35,4 39,15 32,22 C27,27 20,27 20,38 L20,44"
+          fill="none" stroke="url(#qmarkGrad)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="60" r="7.5" fill="url(#qmarkGrad)"/>
+  </g>
+
+  <g transform="translate(390,298) rotate(8) scale(0.82)">
+    <path d="M4,17 C3,6 13,-3 25,1 C35,4 39,15 32,22 C27,27 20,27 20,38 L20,44"
+          fill="none" stroke="url(#qmarkGrad)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="60" r="7.5" fill="url(#qmarkGrad)"/>
+  </g>
+
+  <!-- ============ MOTION MARKS (surprise ticks) ============ -->
+  <g stroke="#8064F3" stroke-width="9" stroke-linecap="round">
+    <line x1="176" y1="202" x2="160" y2="219" transform="rotate(8 176 202)"/>
+    <line x1="155" y1="236" x2="145" y2="250"/>
+  </g>
+
+  <!-- ============ MAGNIFYING GLASS ============ -->
+  <g>
+    <!-- handle -->
+    <g transform="translate(196,344) rotate(42)">
+      <rect x="-19" y="0" width="38" height="118" rx="19" fill="url(#handleGrad)"/>
+      <rect x="-19" y="0" width="16" height="118" rx="8" fill="#5B49D6" opacity="0.35"/>
+    </g>
+
+    <!-- ring + lens -->
+    <circle cx="256" cy="282" r="98" fill="url(#ringGrad)"/>
+    <circle cx="256" cy="282" r="80" fill="#7A55F1"/>
+    <circle cx="256" cy="282" r="75" fill="url(#lensGrad)"/>
+
+    <!-- lens glare -->
+    <ellipse cx="222" cy="242" rx="32" ry="11" fill="#FFFFFF" opacity="0.8" transform="rotate(-38 222 242)"/>
+    <ellipse cx="204" cy="262" rx="9" ry="15" fill="#FFFFFF" opacity="0.65" transform="rotate(-38 204 262)"/>
+
+    <!-- face -->
+    <ellipse cx="231" cy="290" rx="10" ry="14" fill="#2C2A6E" transform="rotate(-12 231 290)"/>
+    <ellipse cx="278" cy="298" rx="9" ry="13" fill="#2C2A6E" transform="rotate(8 278 298)"/>
+    <path d="M214,270 Q225,258 240,267" fill="none" stroke="#2C2A6E" stroke-width="6" stroke-linecap="round"/>
+    <path d="M267,280 Q276,270 286,279" fill="none" stroke="#2C2A6E" stroke-width="6" stroke-linecap="round"/>
+    <path d="M222,320 Q246,306 270,321" fill="none" stroke="#2C2A6E" stroke-width="6.5" stroke-linecap="round" fill-opacity="0"/>
+  </g>
+</svg>

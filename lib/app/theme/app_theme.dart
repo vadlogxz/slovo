@@ -27,6 +27,11 @@ class AppTheme {
         hintStyle: TextStyle(color: colors.textSecondary),
       );
 
+  static BottomSheetThemeData _bottomSheetThemeData(AppColors colors) => BottomSheetThemeData(
+    backgroundColor: colors.surfaceSubtle,
+    surfaceTintColor: Colors.transparent
+  );
+
   static const _appBarTheme = AppBarTheme(
     backgroundColor: Colors.transparent,
     elevation: 0,
@@ -49,6 +54,7 @@ class AppTheme {
     ),
     textTheme: AppTextStyles.light,
     appBarTheme: _appBarTheme,
+    bottomSheetTheme: _bottomSheetThemeData(AppColors.light),
     inputDecorationTheme: _inputTheme(AppColors.light),
     extensions: const [AppColors.light],
   );

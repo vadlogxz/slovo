@@ -18,6 +18,11 @@ class DictionaryLookupCandidates extends DictionaryLookupState {
   final List<DictionaryEntry> candidates;
 }
 
+class DictionaryLookupNotFound extends DictionaryLookupState {
+  DictionaryLookupNotFound(this.term);
+  final String term;
+}
+
 class DictionaryLookupGenerating extends DictionaryLookupState {
   DictionaryLookupGenerating({required this.term});
 

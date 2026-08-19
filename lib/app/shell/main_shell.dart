@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slovo/app/shell/widgets/bottom_nav.dart';
 import 'package:slovo/core/logging/app_logger.dart';
-import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/vocabulary/presentation/widgets/add_word_sheet.dart';
 
 class AppShell extends StatelessWidget {
@@ -24,8 +23,6 @@ class AppShell extends StatelessWidget {
             isScrollControlled: true,
             builder: (context) => const AddWordSheet(),
             showDragHandle: true,
-            backgroundColor: context.colors.surface,
-
           );
         },
         child: Icon(Icons.add),
@@ -46,19 +43,5 @@ class AppShell extends StatelessWidget {
       ),
       body: SafeArea(child: navigationShell),
     );
-  }
-}
-
-class B extends StatefulWidget {
-  const B({super.key});
-
-  @override
-  State<B> createState() => _BState();
-}
-
-class _BState extends State<B> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

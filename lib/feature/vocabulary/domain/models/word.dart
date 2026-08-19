@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slovo/core/utils/enum_from_name.dart';
 
 // ── Enums ─────────────────────────────────────────────────────────────────────
@@ -316,4 +317,25 @@ class Word{
   NounData? get nounData => linguistics.nounData;
   VerbData? get verbData => linguistics.verbData;
   AdjectiveData? get adjectiveData => linguistics.adjectiveData;
+
+  factory Word.fromJson(Map<String, dynamic> json, String id) {
+    return Word(
+      id: id,
+      collectionId: json['collectionId'] as String,
+      term: json['term'] as String,
+      linguistics: WordLinguistics.fromJson(json),
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      dictionaryEntryId: json['dictionaryEntryId'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'collectionId': collectionId,
+      'term': term,
+      'createdAt': Timestamp.fromDate(createdAt),
+      if(dictionaryEntryId != null) 'dictionaryEntryId': dictionaryEntryId,
+      ...linguistics.toJson(),
+    };
+  }
 }

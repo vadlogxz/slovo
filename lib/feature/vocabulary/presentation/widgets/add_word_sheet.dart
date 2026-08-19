@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:slovo/core/assets/app_assets.dart';
+import 'package:slovo/core/logging/app_logger.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/core/theme/color_x.dart';
+import 'package:slovo/feature/auth/di/auth_provider.dart';
 import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
 import 'package:slovo/feature/vocabulary/di/dictionary_entry_provider.dart';
+import 'package:slovo/feature/vocabulary/di/word_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
+import 'package:slovo/feature/vocabulary/domain/models/dictionary_entry.dart';
+import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 import 'package:slovo/feature/vocabulary/presentation/collection_color_x.dart';
 import 'package:slovo/feature/vocabulary/presentation/collection_icon_x.dart';
+import 'package:slovo/feature/vocabulary/presentation/noun_gender_x.dart';
 import 'package:slovo/shared/widgets/_.dart';
+
+import '../../domain/models/dictionary_lookup_state.dart';
 
 class AddWordSheet extends ConsumerStatefulWidget {
   const AddWordSheet({super.key});
@@ -16,25 +28,39 @@ class AddWordSheet extends ConsumerStatefulWidget {
   ConsumerState<AddWordSheet> createState() => _AddWordSheetState();
 }
 
-class _AddWordSheetState extends ConsumerState<AddWordSheet> {
+class _AddWordSheetState extends ConsumerState<AddWordSheet>
+    with SingleTickerProviderStateMixin {
   late TextEditingController _controller;
+  late AnimationController _lottieController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isSearching = false;
 
   @override
   void initState() {
     _controller = TextEditingController();
+
+    _lottieController = AnimationController(vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _lottieController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final lookupState = ref.watch(dictionaryLookupProvider);
+    final isSearching = lookupState is DictionaryLookupSearching;
+    final isGenerating = lookupState is DictionaryLookupGenerating;
+
+    bool isAddWordButtonDisabled =
+        isGenerating ||
+        isSearching ||
+        _controller.text.trim().isEmpty ||
+        ref.watch(selectedCollectionsProvider).isEmpty;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -52,44 +78,133 @@ class _AddWordSheetState extends ConsumerState<AddWordSheet> {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              TextFormField(
-                controller: _controller,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a word';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hint: Text('Enter a word'),
-                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: AppSpacing.sm,
+                children: [
+                  Flexible(
+                    child: TextFormField(
+                      controller: _controller,
+                      onChanged: (value) {
+                        setState(() {});
+                        ref
+                            .read(dictionaryLookupProvider.notifier)
+                            .onQueryChanged(value);
+                      },
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a word';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hint: Text('Enter a word'),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                        border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            _controller.clear();
+                          },
+                        ),
+                      ),
+                    ),
                   ),
-                  border: OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      _controller.clear();
+                  AppButton(
+                    isDisabled:
+                        isGenerating ||
+                        isSearching ||
+                        _controller.text.trim().isEmpty,
+                    width: 60,
+                    contentPadding: EdgeInsets.zero,
+                    style: AppButtonStyle(
+                      background: context.colors.surfaceAccentTint,
+                      border: Border.all(
+                        width: 1.5,
+                        color: context.colors.primary.withValues(alpha: 0.28),
+                      ),
+                      disabledBackground: context.colors.outline.withValues(
+                        alpha: 0.5,
+                      ),
+                      disabledBorder: Border.all(
+                        width: 1.5,
+                        color: context.colors.outline,
+                      ),
+                    ),
+                    child: LottieBuilder.asset(
+                      AppAssets.sparklesLoaderAI,
+                      fit: BoxFit.contain,
+                      controller: _lottieController,
+                    ),
+                    onTap: () {
+                      if (_formKey.currentState?.validate() == true) {
+                        ref
+                            .read(dictionaryLookupProvider.notifier)
+                            .generate(_controller.text.trim());
+                      }
                     },
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: AppSpacing.md),
 
-              // User Collections
-              _Collections(),
+              if (lookupState is DictionaryLookupNotFound)
+                _NoEntryFound(term: lookupState.term),
+
+              if (lookupState is DictionaryLookupCandidates)
+                _DictionaryEntryPicker(entries: lookupState.candidates),
+
+              if (lookupState is DictionaryLookupReady)
+                _DictionaryEntryPreview(entry: lookupState.entry),
 
               const SizedBox(height: AppSpacing.md),
               AppButton(
-                isDisabled: _isSearching,
-                isLoading: _isSearching,
-                onTap: () {
-                  if (_formKey.currentState?.validate() == true) {
-                    // final selected = ref.read(selectedCollectionsProvider);
-                    final addWordProv = ref.read(addWordProvider.notifier);
-                    addWordProv.search(_controller.text.trim());
-                  }
-                },
+                isDisabled: isAddWordButtonDisabled,
+                isLoading: isSearching,
+                onTap: isAddWordButtonDisabled
+                    ? null
+                    : () async {
+                        try {
+                          if (_formKey.currentState?.validate() == true) {
+                            final selected = ref.read(
+                              selectedCollectionsProvider,
+                            );
+                            final userId = ref.read(currentUserIdProvider);
+                            if (lookupState is DictionaryLookupReady) {
+                              final entry = lookupState.entry;
+                              if (userId != null && selected.isNotEmpty) {
+                                await ref
+                                    .read(wordRepositoryProvider)
+                                    .addWordToCollections(
+                                      userId: userId,
+                                      entry: entry,
+                                      collectionIds: selected
+                                          .map((e) => e.id)
+                                          .toList(),
+                                    );
+                                if (context.mounted) context.pop();
+                              } else {
+                                throw Exception(
+                                  'User ID is null or no collections selected',
+                                );
+                              }
+                            }
+                          }
+                        } catch (e) {
+                          AppLogger.error('Error adding word: $e');
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error adding word: $e')),
+                            );
+                          }
+                        }
+                      },
+
                 text: 'Add Word',
               ),
             ],
@@ -184,9 +299,10 @@ class _CollectionItem extends ConsumerWidget {
         ),
       ),
       trailing: selected
-          ? Icon(
-              Icons.check_circle,
-              color: Theme.of(context).colorScheme.primary,
+          ? AppIcon(
+              path: AppAssets.checkCircle,
+              color: context.colors.primary,
+              size: 34,
             )
           : null,
       shape: RoundedRectangleBorder(
@@ -198,6 +314,174 @@ class _CollectionItem extends ConsumerWidget {
       ),
       selected: selected,
       onTap: onTap,
+    );
+  }
+}
+
+class _NoEntryFound extends StatelessWidget {
+  const _NoEntryFound({required this.term});
+
+  final String term;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          AppIcon(path: AppAssets.notFound, size: 200),
+          Text(
+            'No entry found for “$term”.',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DictionaryEntryPicker extends StatelessWidget {
+  const _DictionaryEntryPicker({required this.entries});
+
+  final List<DictionaryEntry> entries;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [Text('${entries.length} matches in dictionary')]);
+  }
+}
+
+class _DictionaryEntryPreview extends StatelessWidget {
+  const _DictionaryEntryPreview({required this.entry});
+
+  final DictionaryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final textTheme = Theme.of(context).textTheme;
+    final gender = entry.nounData?.gender;
+
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            border: Border.all(width: 3, color: colors.outline),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Term (+ noun gender article, when known)
+              Text.rich(
+                TextSpan(
+                  style: GoogleFonts.fraunces(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: gender != null ? '${gender.name} ' : '',
+                      style: TextStyle(color: gender?.color),
+                    ),
+                    TextSpan(text: entry.term),
+                  ],
+                ),
+              ),
+
+              // Word type / CEFR level badges
+              if (entry.wordType != null || entry.level != null) ...[
+                const SizedBox(height: AppSpacing.xs),
+                Wrap(
+                  spacing: AppSpacing.xs,
+                  children: [
+                    if (entry.wordType != null) _InfoChip(entry.wordType.label),
+                    if (entry.level != null) _InfoChip(entry.level!.label),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: AppSpacing.sm),
+
+              // Definition
+              Text(
+                entry.definition ?? 'No definition available',
+                style: textTheme.bodyMedium,
+              ),
+
+              // Example sentence + translation
+              if (entry.example != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                    ),
+                    SizedBox(width: AppSpacing.sm),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.example!,
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                        if (entry.exampleTranslation != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: AppSpacing.xs),
+                            child: Text(
+                              entry.exampleTranslation!,
+                              style: textTheme.bodySmall,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _Collections(),
+      ],
+    );
+  }
+}
+
+/// Small rounded label — used for word-type / CEFR-level tags on
+/// [_DictionaryEntryPreview].
+class _InfoChip extends StatelessWidget {
+  const _InfoChip(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs / 2,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surfaceAccentTint,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(color: colors.primary),
+      ),
     );
   }
 }

@@ -48,8 +48,13 @@ abstract final class AppAssets {
   static const String collectionScience = 'assets/icons/collection_science_outline.svg';
   static const String collectionHome = 'assets/icons/collection_home_outline.svg';
 
+  // Add Word
+  static const String notFound = 'assets/icons/not_found.svg';
+  static const String checkCircle = 'assets/icons/check_circle.svg';
+
   // Lottie animations
   static const String hiHandAnimation = 'assets/animations/hi_hand.json';
   static const String targetAnimation = 'assets/animations/target.json';
   static const String bellAnimation = 'assets/animations/bell.json';
+  static const String sparklesLoaderAI = 'assets/animations/sparkles_loader_ai.json';
 }
