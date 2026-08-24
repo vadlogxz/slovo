@@ -34,9 +34,13 @@ class FirebaseDictionaryRepository implements DictionaryRepository {
   }
 
   @override
-  Stream<DictionaryEntry> generate(String term) {
-    final docRef = _dictionaryReference().doc();
-    final entry = DictionaryEntry.pending(docRef.id, term);
+  Stream<DictionaryEntry> generate({ required String term, required String searchKey}) {
+    final docRef = _dictionaryReference().doc(searchKey);
+    final entry = DictionaryEntry.pending(
+      id: docRef.id,
+      term: term,
+      searchKey: searchKey,
+    );
     docRef.set(entry.toJson()).catchError((error) {
       AppLogger.error(
         'Failed to create dictionary entry for term "$term"',

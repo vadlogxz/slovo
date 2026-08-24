@@ -60,9 +60,10 @@ class DictionaryLookupNotifier extends Notifier<DictionaryLookupState> {
   Future<void> generate(String term) async {
     state = DictionaryLookupGenerating(term: term);
     AppLogger.info('Generating new dictionary entry for "$term"');
+    final normalizeKey = DictionaryEntry.normalizeSearchKey(term);
     final generatedEntry = ref
         .read(dictionaryRepositoryProvider)
-        .generate(term);
+        .generate(term: term, searchKey: normalizeKey);
     _generationSub = generatedEntry.listen(
       (entry) {
         AppLogger.info('Generated dictionary entry for "$term": $entry');
@@ -83,7 +84,7 @@ class DictionaryLookupNotifier extends Notifier<DictionaryLookupState> {
 }
 
 final dictionaryLookupProvider =
-    NotifierProvider<DictionaryLookupNotifier, DictionaryLookupState>(
+    NotifierProvider.autoDispose<DictionaryLookupNotifier, DictionaryLookupState>(
       DictionaryLookupNotifier.new,
     );
 

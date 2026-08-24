@@ -62,10 +62,10 @@ class DictionaryEntry {
     );
   }
 
-  factory DictionaryEntry.pending(String id, String term) => DictionaryEntry(
+  factory DictionaryEntry.pending({required String id, required String term, required String searchKey}) => DictionaryEntry(
     id: id,
     term: term,
-    searchKey: normalizeSearchKey(term),
+    searchKey: searchKey,
     status: GenerationStatus.pending,
     createdAt: DateTime.now(),
   );

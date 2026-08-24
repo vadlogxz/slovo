@@ -4,5 +4,5 @@ abstract class DictionaryRepository {
 
   Future<List<DictionaryEntry>>searchByKey(String key);
 
-  Stream<DictionaryEntry> generate(String term);
+  Stream<DictionaryEntry> generate({required String term, required String searchKey});
 }
