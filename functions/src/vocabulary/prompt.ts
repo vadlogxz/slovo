@@ -24,6 +24,17 @@ JSON schema:
   "verbData": {
     "partizip2": string,
     "hilfsVerb": "haben" | "sein",
+    // isTrennbar/trennbarPrefix: ONLY for prefixes that actually detach in
+    // Präsens/Imperativ (ab-, an-, auf-, aus-, ein-, mit-, nach-, vor-, weg-,
+    // zu-, zurück-, etc.). be-, ge-, er-, ver-, zer-, ent-, emp-, and miss-
+    // are ALWAYS untrennbar — for those, isTrennbar MUST be false and
+    // trennbarPrefix MUST be null, even though they look like prefixes.
+    // durch-, über-, unter-, um-, wieder-, wider-, and voll- are VARIABLE:
+    // the same prefix is trennbar for one verb and untrennbar for another,
+    // often with a meaning change (e.g. "übersetzen" = to translate is
+    // untrennbar, but = to ferry across is trennbar: "er setzt über").
+    // Judge these per-verb from the dictionary form's actual meaning —
+    // do not default either way.
     "isTrennbar": boolean,
     "trennbarPrefix": string | null,
     "isIrregular": boolean,

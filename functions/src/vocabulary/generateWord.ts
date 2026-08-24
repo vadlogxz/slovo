@@ -62,10 +62,15 @@ async function callOpenAI(
   term: string
 ): Promise<Omit<DictionaryEntry, "status" | "createdAt" | "searchKey">> {
   const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     response_format: { type: "json_object" },
-    temperature: 0,
-    max_tokens: 512,
+    // Reasoning models (gpt-5 family) reject a custom `temperature` on
+    // Chat Completions and use `reasoning_effort` instead; `max_tokens` is
+    // likewise deprecated for them in favor of `max_completion_tokens`,
+    // whose budget also covers the model's internal reasoning tokens —
+    // hence the higher cap than the old flat 512.
+    reasoning_effort: "medium",
+    max_completion_tokens: 2000,
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userMessage(term) },
