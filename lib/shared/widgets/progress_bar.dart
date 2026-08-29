@@ -6,11 +6,13 @@ class AppProgressBar extends StatefulWidget {
     super.key,
     required this.value,
     this.height = 6.0,
+    this.progressColor,
     this.backgroundColor,
   });
 
   final double value;
   final double height;
+  final Color? progressColor;
   final Color? backgroundColor;
 
   @override
@@ -63,7 +65,7 @@ class _AppProgressBarState extends State<AppProgressBar>
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 400),
-              color: Colors.white.withValues(alpha: 0.2),
+              color: widget.backgroundColor ?? Colors.white.withValues(alpha: 0.2),
             ),
             AnimatedBuilder(
               animation: _animation,
@@ -72,7 +74,7 @@ class _AppProgressBarState extends State<AppProgressBar>
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeOut,
-                  decoration: BoxDecoration(color: widget.backgroundColor),
+                  decoration: BoxDecoration(color: widget.progressColor),
                 ),
               ),
             ),

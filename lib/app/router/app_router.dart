@@ -4,8 +4,10 @@ import 'package:slovo/app/shell/main_shell.dart';
 import 'package:slovo/app/shell/widgets/branch_slide_transition.dart';
 import 'package:slovo/feature/auth/presentation/login_screen.dart';
 import 'package:slovo/feature/home/presentation/home_screen.dart';
+import 'package:slovo/feature/learning/presentation/screens/learning_screen.dart';
 import 'package:slovo/feature/onboarding/presentation/screens/_.dart';
 import 'package:slovo/feature/profile/presentation/profile_screen.dart';
+import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 import 'package:slovo/feature/vocabulary/presentation/screens/add_collection_screen.dart';
 import 'package:slovo/feature/vocabulary/presentation/screens/vocabulary_screen.dart';
 
@@ -29,6 +31,12 @@ final appRoutes = <RouteBase>[
     path: AppRoutes.createCollection.path,
     name: AppRoutes.createCollection.name,
     builder: (context, state) => const CreateCollectionScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.learning.path,
+    name: AppRoutes.learning.name,
+
+    builder: (context, state) => LearningScreen(sessionWordList: state.extra as List<Word>,),
   ),
   StatefulShellRoute(
     builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
