@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/logging/app_logger.dart';
@@ -14,12 +13,14 @@ import 'package:slovo/feature/vocabulary/di/word_provider.dart';
 import 'package:slovo/feature/vocabulary/domain/models/collection.dart';
 import 'package:slovo/feature/vocabulary/domain/models/dictionary_entry.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
-import 'package:slovo/feature/vocabulary/presentation/collection_color_x.dart';
-import 'package:slovo/feature/vocabulary/presentation/collection_icon_x.dart';
-import 'package:slovo/feature/vocabulary/presentation/noun_gender_x.dart';
+import 'package:slovo/feature/vocabulary/presentation/extensions/collection_color_x.dart';
+import 'package:slovo/feature/vocabulary/presentation/extensions/collection_icon_x.dart';
+import 'package:slovo/feature/vocabulary/presentation/widgets/grammar_details.dart';
+import 'package:slovo/feature/vocabulary/presentation/widgets/word_example.dart';
 import 'package:slovo/shared/widgets/_.dart';
 
 import '../../domain/models/dictionary_lookup_state.dart';
+import 'gendered_text_term.dart';
 
 class AddWordSheet extends ConsumerStatefulWidget {
   const AddWordSheet({super.key});
@@ -359,8 +360,7 @@ class _DictionaryEntryPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final textTheme = Theme.of(context).textTheme;
-    final gender = entry.nounData?.gender;
-
+    final linguistics = entry.linguistics;
     return Column(
       children: [
         Container(
@@ -374,21 +374,9 @@ class _DictionaryEntryPreview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Term (+ noun gender article, when known)
-              Text.rich(
-                TextSpan(
-                  style: GoogleFonts.fraunces(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: gender != null ? '${gender.name} ' : '',
-                      style: TextStyle(color: gender?.color),
-                    ),
-                    TextSpan(text: entry.term),
-                  ],
-                ),
+              GenderedTextTerm(
+                term: entry.term,
+                gender: entry.nounData?.gender,
               ),
 
               // Word type / CEFR level badges
@@ -414,44 +402,16 @@ class _DictionaryEntryPreview extends StatelessWidget {
               // Example sentence + translation
               if (entry.example != null) ...[
                 const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Container(
-                      width: 4,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: colors.primary,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
-                    ),
-                    SizedBox(width: AppSpacing.sm),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.example!,
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        if (entry.exampleTranslation != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: AppSpacing.xs),
-                            child: Text(
-                              entry.exampleTranslation!,
-                              style: textTheme.bodySmall,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
+                WordExample(
+                  example: entry.example!,
+                  exampleTranslation: entry.exampleTranslation,
                 ),
               ],
 
-              if (_hasGrammarDetails(entry)) ...[
+              if (linguistics != null && hasGrammarDetails(linguistics)) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Divider(height: 1, color: colors.outline),
-                _GrammarDetails(entry: entry),
+                _GrammarSection(linguistics: linguistics),
               ],
             ],
           ),
@@ -461,31 +421,22 @@ class _DictionaryEntryPreview extends StatelessWidget {
       ],
     );
   }
-
-  bool _hasGrammarDetails(DictionaryEntry entry) {
-    final verb = entry.verbData;
-    final noun = entry.nounData;
-    final adj = entry.adjectiveData;
-    return verb != null ||
-        (noun != null && (noun.plural != null || noun.genitive != null)) ||
-        (adj != null && (adj.komparativ != null || adj.superlativ != null));
-  }
 }
 
 /// Collapsible "Grammar" section on [_DictionaryEntryPreview] — holds the
 /// secondary details (Perfekt/Präteritum, trennbar, plural/genitive,
 /// comparison forms) plus the present-tense conjugation table, so the card
 /// itself stays short until the learner asks for more.
-class _GrammarDetails extends StatefulWidget {
-  const _GrammarDetails({required this.entry});
+class _GrammarSection extends StatefulWidget {
+  const _GrammarSection({required this.linguistics});
 
-  final DictionaryEntry entry;
+  final WordLinguistics linguistics;
 
   @override
-  State<_GrammarDetails> createState() => _GrammarDetailsState();
+  State<_GrammarSection> createState() => _GrammarSectionState();
 }
 
-class _GrammarDetailsState extends State<_GrammarDetails> {
+class _GrammarSectionState extends State<_GrammarSection> {
   bool _expanded = false;
 
   @override
@@ -526,7 +477,7 @@ class _GrammarDetailsState extends State<_GrammarDetails> {
         ),
         AnimatedCrossFade(
           firstChild: const SizedBox(width: double.infinity),
-          secondChild: _details(context),
+          secondChild: GrammarDetails(linguistics: widget.linguistics),
           crossFadeState: _expanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
@@ -534,181 +485,6 @@ class _GrammarDetailsState extends State<_GrammarDetails> {
           sizeCurve: Curves.easeInOut,
         ),
       ],
-    );
-  }
-
-  Widget _details(BuildContext context) {
-    final entry = widget.entry;
-    final verb = entry.verbData;
-    final noun = entry.nounData;
-    final adj = entry.adjectiveData;
-
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: AppSpacing.xs),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (verb != null) ...[
-            _DetailRow(
-              label: 'Perfekt',
-              value:
-                  '${verb.hilfsVerb == HilfsVerb.sein ? 'ist' : 'hat'} ${verb.partizip2}',
-            ),
-            if (verb.praeteritum != null)
-              _DetailRow(label: 'Präteritum', value: verb.praeteritum!),
-            _DetailRow(
-              label: 'Trennbar',
-              value: verb.isTrennbar
-                  ? 'Yes (${verb.trennbarPrefix ?? '?'}-)'
-                  : 'No',
-            ),
-            if (verb.isIrregular) _DetailRow(label: 'Irregular', value: 'Yes'),
-          ],
-          if (noun != null) ...[
-            if (noun.plural != null)
-              _DetailRow(label: 'Plural', value: noun.plural!),
-            if (noun.genitive != null)
-              _DetailRow(label: 'Genitive', value: noun.genitive!),
-          ],
-          if (adj != null) ...[
-            if (adj.komparativ != null)
-              _DetailRow(label: 'Comparative', value: adj.komparativ!),
-            if (adj.superlativ != null)
-              _DetailRow(label: 'Superlative', value: adj.superlativ!),
-          ],
-          if (verb?.conjugation != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Präsens',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: context.colors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            _ConjugationTable(conjugation: verb!.conjugation!),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// One "label — value" line inside [_GrammarDetails].
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 90,
-            child: Text(
-              label,
-              style: textTheme.bodySmall?.copyWith(color: colors.textMuted),
-            ),
-          ),
-          Expanded(
-            child: Text(value, style: textTheme.bodyMedium),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Present-tense conjugation table — two columns (singular / plural),
-/// each row pairing a pronoun with its conjugated form.
-class _ConjugationTable extends StatelessWidget {
-  const _ConjugationTable({required this.conjugation});
-
-  final VerbConjugation conjugation;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final divider = BorderSide(color: colors.outline);
-
-    return Table(
-      border: TableBorder(
-        horizontalInside: divider,
-        verticalInside: divider,
-      ),
-      columnWidths: const {
-        0: FlexColumnWidth(),
-        1: FlexColumnWidth(),
-      },
-      children: [
-        _row(context, 'ich', conjugation.ich, 'wir', conjugation.wir),
-        _row(context, 'du', conjugation.du, 'ihr', conjugation.ihr),
-        _row(
-          context,
-          'er/sie/es',
-          conjugation.erSieEs,
-          'sie/Sie',
-          conjugation.sieSie,
-        ),
-      ],
-    );
-  }
-
-  TableRow _row(
-    BuildContext context,
-    String leftPronoun,
-    String leftForm,
-    String rightPronoun,
-    String rightForm,
-  ) {
-    return TableRow(
-      children: [
-        _ConjugationCell(pronoun: leftPronoun, form: leftForm),
-        _ConjugationCell(pronoun: rightPronoun, form: rightForm),
-      ],
-    );
-  }
-}
-
-class _ConjugationCell extends StatelessWidget {
-  const _ConjugationCell({required this.pronoun, required this.form});
-
-  final String pronoun;
-  final String form;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 62,
-            child: Text(
-              pronoun,
-              style: textTheme.bodySmall?.copyWith(color: colors.textMuted),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              form,
-              style: textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
