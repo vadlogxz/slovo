@@ -6,6 +6,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
 import 'package:slovo/core/theme/_.dart';
+import 'package:slovo/feature/home/presentation/widgets/statistic_card.dart';
 import 'package:slovo/feature/learning/data/mock_words.dart';
 import 'package:slovo/feature/profile/di/profile_provider.dart';
 import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
@@ -141,7 +142,8 @@ class _DailyProgress extends ConsumerWidget {
       profileProvider.select((p) => p.asData?.value.dailyGoalMinutes),
     );
 
-    int minutesCompleted = 12; // Placeholder for completed minutes, should be fetched from user data
+    int minutesCompleted =
+        12; // Placeholder for completed minutes, should be fetched from user data
 
     double progress = dailyGoalMinutes != null && dailyGoalMinutes > 0
         ? minutesCompleted / dailyGoalMinutes
@@ -203,7 +205,9 @@ class _DailyProgress extends ConsumerWidget {
                 Expanded(
                   child: Skeleton.replace(
                     height: 10,
-                    replacement: Bone(borderRadius: BorderRadius.circular(AppRadius.sm)),
+                    replacement: Bone(
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
                     child: AppProgressBar(
                       value: progress,
                       height: 8,
@@ -245,9 +249,11 @@ class _StartLearningButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sessionWordList = sampleWords; // Placeholder for the list of words to learn, should be fetched from user data or API
+    final sessionWordList =
+        sampleWords; // Placeholder for the list of words to learn, should be fetched from user data or API
     return AppButton(
-      onTap: () => context.push(AppRoutes.learning.path, extra: sessionWordList),
+      onTap: () =>
+          context.push(AppRoutes.learning.path, extra: sessionWordList),
       style: AppButtonStyle.primary(
         context.colors,
       ).copyWith(background: context.colors.primaryDark),
@@ -294,43 +300,49 @@ class _StatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionsCount = ref.watch(userCollectionsProvider).maybeWhen(
-      data: (collections) => collections.length,
-      orElse: () => 0,
-    );
-    final dailyGoal = ref.watch(profileProvider).maybeWhen(
-      data: (profile) => profile.dailyGoalMinutes,
-      orElse: () => 0,
-    );
+    final collectionsCount = ref
+        .watch(userCollectionsProvider)
+        .maybeWhen(data: (collections) => collections.length, orElse: () => 0);
+    final dailyGoal = ref
+        .watch(profileProvider)
+        .maybeWhen(
+          data: (profile) => profile.dailyGoalMinutes,
+          orElse: () => 0,
+        );
 
-    final totalWordsCount = ref.watch(userCollectionsProvider).maybeWhen(
-      data: (collections) => collections.fold(0, (sum, collection) => sum + collection.wordCount),
-      orElse: () => 0,
-    );
+    final totalWordsCount = ref
+        .watch(userCollectionsProvider)
+        .maybeWhen(
+          data: (collections) => collections.fold(
+            0,
+            (sum, collection) => sum + collection.wordCount,
+          ),
+          orElse: () => 0,
+        );
 
     return Row(
       children: [
         Expanded(
-          child: _StatCard(
+          child: StatisticCard(
             title: 'My words',
             value: totalWordsCount.toString(),
-            icon: Icons.bookmark,
+            icon: Icons.bookmark_border,
             color: context.colors.primary,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
         Expanded(
-          child: _StatCard(
+          child: StatisticCard(
             title: 'Collections',
             value: collectionsCount.toString(),
-            icon: Icons.folder,
+            icon: Icons.folder_open,
             color: AppAccents.mint,
           ),
         ),
         SizedBox(width: AppSpacing.sm),
         Expanded(
           //TODO: Implement logic to calculate the percentage of words learned from the total words in all collections
-          child: _StatCard(
+          child: StatisticCard(
             title: 'Stats',
             value: '91%',
             icon: Icons.stacked_bar_chart,
@@ -339,7 +351,7 @@ class _StatsSection extends ConsumerWidget {
         ),
         SizedBox(width: AppSpacing.sm),
         Expanded(
-          child: _StatCard(
+          child: StatisticCard(
             title: 'Daily goal',
             value: '${dailyGoal}m',
             icon: Icons.access_time,
@@ -347,68 +359,6 @@ class _StatsSection extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _StatCard extends ConsumerWidget {
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.md,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.md),
-        border: Border.all(color: context.colors.outline, width: 2),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.all(Radius.circular(AppRadius.md)),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          SizedBox(height: AppSpacing.sm),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: context.colors.textPrimary,
-              ),
-            ),
-          ),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontSize: 13,
-                color: context.colors.textSecondary,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -19,11 +19,20 @@ class LearningScreen extends StatefulWidget {
 
 class _LearningScreenState extends State<LearningScreen> {
   int currentWordIndex = 0;
+  Map<RecallRating, int> recallRatings = {
+    RecallRating.again: 0,
+    RecallRating.hard: 0,
+    RecallRating.good: 0,
+    RecallRating.easy: 0,
+  };
 
   @override
   Widget build(BuildContext context) {
     if (currentWordIndex >= widget.sessionWordList.length) {
-      return SessionSummaryScreen();
+      return SessionSummaryScreen(
+        recallRatings: recallRatings,
+        reviewedCount: widget.sessionWordList.length,
+      );
     }
     return Scaffold(
       body: SafeArea(
@@ -45,6 +54,7 @@ class _LearningScreenState extends State<LearningScreen> {
                   AppLogger.debug('Recall rating: $rating');
                   setState(() {
                     currentWordIndex++;
+                    recallRatings[rating] = recallRatings[rating]! + 1;
                   });
                 },
               ),

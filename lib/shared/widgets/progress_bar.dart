@@ -84,3 +84,37 @@ class _AppProgressBarState extends State<AppProgressBar>
     );
   }
 }
+
+class AppSectionProgressBar extends StatelessWidget {
+  const AppSectionProgressBar({super.key, required this.sections});
+
+  final List<ProgressBarSection> sections;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      spacing: 2,
+      children: [
+        for (final section in sections)
+          Expanded(
+            flex: section.value,
+            child: AppProgressBar(
+              value: 1,
+              height: 8,
+              progressColor: section.color,
+              backgroundColor: Colors.transparent,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class ProgressBarSection {
+  ProgressBarSection({required this.value, required this.color});
+
+  final int value;
+  final Color color;
+}
+

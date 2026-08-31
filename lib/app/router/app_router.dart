@@ -3,7 +3,7 @@ import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/app/shell/main_shell.dart';
 import 'package:slovo/app/shell/widgets/branch_slide_transition.dart';
 import 'package:slovo/feature/auth/presentation/login_screen.dart';
-import 'package:slovo/feature/home/presentation/home_screen.dart';
+import 'package:slovo/feature/home/presentation/screens/home_screen.dart';
 import 'package:slovo/feature/learning/presentation/screens/learning_screen.dart';
 import 'package:slovo/feature/onboarding/presentation/screens/_.dart';
 import 'package:slovo/feature/profile/presentation/profile_screen.dart';
