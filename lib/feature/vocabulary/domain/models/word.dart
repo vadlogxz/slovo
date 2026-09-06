@@ -298,7 +298,7 @@ class Word{
     required this.linguistics,
     required this.createdAt,
     // Links back to the global dictionary entry this word was sourced from.
-    this.dictionaryEntryId,
+    required this.dictionaryEntryId,
   });
 
   final String id;
@@ -306,7 +306,7 @@ class Word{
   final String term;
   final WordLinguistics linguistics;
   final DateTime createdAt;
-  final String? dictionaryEntryId;
+  final String dictionaryEntryId;
 
   // Delegation getters — keep call sites ergonomic without exposing internals.
   String get definition => linguistics.definition;
@@ -325,7 +325,7 @@ class Word{
       term: json['term'] as String,
       linguistics: WordLinguistics.fromJson(json),
       createdAt: (json['createdAt'] as Timestamp).toDate(),
-      dictionaryEntryId: json['dictionaryEntryId'] as String?,
+      dictionaryEntryId: json['dictionaryEntryId'] as String,
     );
   }
 
@@ -334,7 +334,7 @@ class Word{
       'collectionId': collectionId,
       'term': term,
       'createdAt': Timestamp.fromDate(createdAt),
-      if(dictionaryEntryId != null) 'dictionaryEntryId': dictionaryEntryId,
+      'dictionaryEntryId': dictionaryEntryId,
       ...linguistics.toJson(),
     };
   }
