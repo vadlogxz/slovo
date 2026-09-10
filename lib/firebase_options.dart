@@ -58,10 +58,10 @@ class DefaultFirebaseOptions {
   );
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDr6GivYaSoi3c7EbOe-Sozy1AOPg-VCJY',
-    appId: '1:560248660929:ios:92a7e46c09f7a68eba0540',
+    appId: '1:560248660929:ios:5e628b6646a84e02ba0540',
     messagingSenderId: '560248660929',
     projectId: 'slovo-91017',
     storageBucket: 'slovo-91017.firebasestorage.app',
-    iosBundleId: 'com.example.slovo',
+    iosBundleId: 'com.vadlog.slovo',
   );
 }
