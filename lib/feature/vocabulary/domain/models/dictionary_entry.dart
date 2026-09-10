@@ -50,11 +50,11 @@ class DictionaryEntry {
   // [wordId] must be a unique ID for this word within the collection's words
   // subcollection (the repository uses the dictionary entry's own id, so
   // re-adding the same term resolves to the same doc instead of a duplicate).
-  Word? toWord({required String wordId, required String collectionId}) {
+  Word? toWord({required String wordId, required List<String> collectionId}) {
     if (!isReady || linguistics == null) return null;
     return Word(
       id: wordId,
-      collectionId: collectionId,
+      collectionIds: collectionId,
       dictionaryEntryId: id,
       term: term,
       linguistics: linguistics!,

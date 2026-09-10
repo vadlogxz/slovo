@@ -3,7 +3,7 @@ import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 List<Word> sampleWords = [
   Word(
     id: '1',
-    collectionId: '1',
+    collectionIds: ['1'],
     dictionaryEntryId: '1',
     term: 'Apfel',
     linguistics: WordLinguistics(
@@ -22,7 +22,7 @@ List<Word> sampleWords = [
   ),
   Word(
     id: '2',
-    collectionId: '1',
+    collectionIds: ['1'],
     dictionaryEntryId: '2',
     term: 'laufen',
     linguistics: WordLinguistics(
@@ -50,7 +50,7 @@ List<Word> sampleWords = [
   ),
   Word(
     id: '3',
-    collectionId: '1',
+    collectionIds: ['1'],
     dictionaryEntryId: '3',
     term: 'aufstehen',
     linguistics: WordLinguistics(
@@ -78,7 +78,7 @@ List<Word> sampleWords = [
   ),
   Word(
     id: '4',
-    collectionId: '1',
+    collectionIds: ['1'],
     dictionaryEntryId: '4',
     term: 'schön',
     linguistics: WordLinguistics(
@@ -96,7 +96,7 @@ List<Word> sampleWords = [
   ),
   Word(
     id: '5',
-    collectionId: '1',
+    collectionIds: ['1'],
     dictionaryEntryId: '5',
     term: 'unter',
     linguistics: WordLinguistics(

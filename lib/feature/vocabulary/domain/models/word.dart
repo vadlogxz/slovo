@@ -293,7 +293,7 @@ class WordLinguistics{
 class Word{
   const Word({
     required this.id,
-    required this.collectionId,
+    required this.collectionIds,
     required this.term,
     required this.linguistics,
     required this.createdAt,
@@ -302,7 +302,7 @@ class Word{
   });
 
   final String id;
-  final String collectionId;
+  final List<String> collectionIds;
   final String term;
   final WordLinguistics linguistics;
   final DateTime createdAt;
@@ -321,7 +321,7 @@ class Word{
   factory Word.fromJson(Map<String, dynamic> json, String id) {
     return Word(
       id: id,
-      collectionId: json['collectionId'] as String,
+      collectionIds: List<String>.from(json['collectionIds'] as List),
       term: json['term'] as String,
       linguistics: WordLinguistics.fromJson(json),
       createdAt: (json['createdAt'] as Timestamp).toDate(),
@@ -331,7 +331,7 @@ class Word{
 
   Map<String, dynamic> toJson() {
     return {
-      'collectionId': collectionId,
+      'collectionIds': collectionIds,
       'term': term,
       'createdAt': Timestamp.fromDate(createdAt),
       'dictionaryEntryId': dictionaryEntryId,

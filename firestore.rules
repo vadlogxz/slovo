@@ -37,11 +37,12 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == uid;
     }
 
+    // User collections — only the owner can read/write
     match /users/{uid}/collections/{collectionId} {
       allow read, write: if request.auth.uid == uid;
     }
 
-    match /users/{uid}/collections/{collectionId}/words/{wordId} {
+    match /users/{uid}/words/{wordId} {
       allow read, write: if request.auth.uid == uid;
     }
 
