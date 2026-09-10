@@ -1,59 +1,60 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fsrs/fsrs.dart';
 import 'package:slovo/feature/learning/presentation/widgets/recall_buttons.dart';
 
 class WordProgress {
   WordProgress({
     required this.dictionaryEntryId,
     required this.lastRating,
-    required this.lastReviewed,
     required this.reviewedCount,
+    required this.fsrsCard,
   });
 
   final String dictionaryEntryId;
   final RecallRating lastRating;
-  final DateTime lastReviewed;
   final int reviewedCount;
+  final Card fsrsCard;
 
   factory WordProgress.fromJson(Map<String, dynamic> json) {
     return WordProgress(
       dictionaryEntryId: json['dictionaryEntryId'] as String,
       lastRating: RecallRating.values.byName(json['lastRating'] as String),
-      lastReviewed: (json['lastReviewed'] as Timestamp).toDate(),
       reviewedCount: json['reviewedCount'] as int,
+      fsrsCard: Card.fromMap(json['fsrsCard'] as Map<String, dynamic>),
     );
   }
 
   factory WordProgress.record({
     required String dictionaryEntryId,
     required RecallRating rating,
+    required Card fsrsCard,
     int previousReviewCount = 0,
   }) => WordProgress(
     dictionaryEntryId: dictionaryEntryId,
     lastRating: rating,
-    lastReviewed: DateTime.now(),
     reviewedCount: previousReviewCount + 1,
+    fsrsCard: fsrsCard,
   );
 
   Map<String, dynamic> toJson() {
     return {
       'dictionaryEntryId': dictionaryEntryId,
       'lastRating': lastRating.name,
-      'lastReviewed': Timestamp.fromDate(lastReviewed),
       'reviewedCount': reviewedCount,
+      'fsrsCard': fsrsCard.toMap(),
     };
   }
 
   WordProgress copyWith({
     String? dictionaryEntryId,
     RecallRating? lastRating,
-    DateTime? lastReviewed,
     int? reviewedCount,
+    Card? fsrsCard,
   }) {
     return WordProgress(
       dictionaryEntryId: dictionaryEntryId ?? this.dictionaryEntryId,
       lastRating: lastRating ?? this.lastRating,
-      lastReviewed: lastReviewed ?? this.lastReviewed,
       reviewedCount: reviewedCount ?? this.reviewedCount,
+      fsrsCard: fsrsCard ?? this.fsrsCard,
     );
   }
 

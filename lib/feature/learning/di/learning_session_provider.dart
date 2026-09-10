@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:slovo/feature/auth/di/auth_provider.dart';
+import 'package:slovo/feature/learning/di/word_progress_scheduler_provider.dart';
 import 'package:slovo/feature/learning/di/word_progress_provider.dart';
 import 'package:slovo/feature/learning/domain/models/learning_session_state.dart';
-import 'package:slovo/feature/learning/domain/models/word_progress.dart';
 
 import '../presentation/widgets/recall_buttons.dart';
+import 'due_words_provider.dart';
 
 class LearningSessionNotifier extends Notifier<LearningSessionState> {
   @override
@@ -42,16 +43,17 @@ class LearningSessionNotifier extends Notifier<LearningSessionState> {
           .read(wordProgressProvider)
           .updateWordProgress(
             userId: userId,
-            wordProgress: WordProgress.record(
+            wordProgress: ref.read(wordProgressSchedulerProvider).review(
               dictionaryEntryId: dictionaryEntryId,
+              current: currentWordProgress,
               rating: rating,
-              previousReviewCount: currentWordProgress?.reviewedCount ?? 0,
             ),
           );
+      ref.invalidate(dueWordsProvider);
     }
   }
 }
 
-final learningSessionProvider = NotifierProvider<LearningSessionNotifier, LearningSessionState>(
+final learningSessionProvider = NotifierProvider.autoDispose<LearningSessionNotifier, LearningSessionState>(
   LearningSessionNotifier.new,
 );

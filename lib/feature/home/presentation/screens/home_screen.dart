@@ -5,9 +5,10 @@ import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
+import 'package:slovo/core/logging/app_logger.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/home/presentation/widgets/statistic_card.dart';
-import 'package:slovo/feature/learning/data/mock_words.dart';
+import 'package:slovo/feature/learning/di/due_words_provider.dart';
 import 'package:slovo/feature/profile/di/profile_provider.dart';
 import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
 import 'package:slovo/shared/widgets/_.dart';
@@ -244,16 +245,23 @@ class _DailyProgress extends ConsumerWidget {
   }
 }
 
-class _StartLearningButton extends StatelessWidget {
+class _StartLearningButton extends ConsumerWidget {
   const _StartLearningButton();
 
   @override
-  Widget build(BuildContext context) {
-    final sessionWordList =
-        sampleWords; // Placeholder for the list of words to learn, should be fetched from user data or API
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final dueWordsAsync = ref.watch(dueWordsProvider);
+
+    if (dueWordsAsync.hasError) {
+      AppLogger.error('Failed to load due words: ${dueWordsAsync.error}');
+    }
+
     return AppButton(
-      onTap: () =>
-          context.push(AppRoutes.learning.path, extra: sessionWordList),
+      onTap:  dueWordsAsync.hasValue
+          ? () => context.push(AppRoutes.learning.path, extra: dueWordsAsync.value)
+          : null,
+      isDisabled:  !dueWordsAsync.hasValue,
       style: AppButtonStyle.primary(
         context.colors,
       ).copyWith(background: context.colors.primaryDark),

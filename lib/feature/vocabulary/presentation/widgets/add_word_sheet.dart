@@ -7,6 +7,7 @@ import 'package:slovo/core/logging/app_logger.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/core/theme/color_x.dart';
 import 'package:slovo/feature/auth/di/auth_provider.dart';
+import 'package:slovo/feature/learning/di/due_words_provider.dart';
 import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
 import 'package:slovo/feature/vocabulary/di/dictionary_entry_provider.dart';
 import 'package:slovo/feature/vocabulary/di/word_provider.dart';
@@ -188,6 +189,7 @@ class _AddWordSheetState extends ConsumerState<AddWordSheet>
                                           .map((e) => e.id)
                                           .toList(),
                                     );
+                                ref.invalidate(dueWordsProvider);
                                 if (context.mounted) context.pop();
                               } else {
                                 throw Exception(
