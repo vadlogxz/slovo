@@ -326,9 +326,9 @@ class _Greetings extends ConsumerWidget {
               width: double.infinity,
               padding: EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: context.colors.surfaceAccentTint,
+                color: context.colors.surfaceAccent,
                 border: Border.all(
-                  color: context.colors.surfaceAccent,
+                  color: context.colors.accentBorder,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(AppRadius.lg)),

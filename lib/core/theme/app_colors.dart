@@ -44,7 +44,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.surface,
     required this.surfaceSubtle,
     required this.surfaceAccent,
-    required this.surfaceAccentTint,
+    required this.accentBorder,
     required this.surfaceIconBadge,
     required this.outline,
     required this.shadow,
@@ -65,7 +65,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color surface;
   final Color surfaceSubtle;
   final Color surfaceAccent;
-  final Color surfaceAccentTint;
+  final Color accentBorder;
   final Color surfaceIconBadge;
   final Color outline;
   final Color shadow;
@@ -87,8 +87,8 @@ class AppColors extends ThemeExtension<AppColors> {
     primaryDark: _Palette.violetDark,
     surface: _Palette.surfaceViolet,
     surfaceSubtle: _Palette.grey50,
-    surfaceAccent: _Palette.surfaceAccentBorder,
-    surfaceAccentTint: _Palette.surfaceAccentTint,
+    surfaceAccent: _Palette.surfaceAccentTint,
+    accentBorder: _Palette.surfaceAccentBorder,
     surfaceIconBadge: _Palette.surfaceIconBadge,
     outline: _Palette.grey200,
     shadow: _Palette.shadow10,
@@ -107,8 +107,8 @@ class AppColors extends ThemeExtension<AppColors> {
     primaryDark: _Palette.violetDark,
     surface: _Palette.dark950,
     surfaceSubtle: _Palette.dark800,
-    surfaceAccent: _Palette.surfaceAccentBorder,
-    surfaceAccentTint: _Palette.surfaceAccentTint,
+    surfaceAccent: _Palette.surfaceAccentTint,
+    accentBorder: _Palette.surfaceAccentBorder,
     surfaceIconBadge: _Palette.surfaceIconBadge,
     outline: _Palette.dark800,
     shadow: _Palette.shadow20,
@@ -128,7 +128,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? surface,
     Color? surfaceSubtle,
     Color? surfaceAccent,
-    Color? surfaceAccentTint,
+    Color? accentBorder,
     Color? surfaceIconBadge,
     Color? outline,
     Color? shadow,
@@ -145,7 +145,7 @@ class AppColors extends ThemeExtension<AppColors> {
     surface: surface ?? this.surface,
     surfaceSubtle: surfaceSubtle ?? this.surfaceSubtle,
     surfaceAccent: surfaceAccent ?? this.surfaceAccent,
-    surfaceAccentTint: surfaceAccentTint ?? this.surfaceAccentTint,
+    accentBorder: accentBorder ?? this.accentBorder,
     surfaceIconBadge: surfaceIconBadge ?? this.surfaceIconBadge,
     outline: outline ?? this.outline,
     shadow: shadow ?? this.shadow,
@@ -167,7 +167,7 @@ class AppColors extends ThemeExtension<AppColors> {
       surface: Color.lerp(surface, other.surface, t)!,
       surfaceSubtle: Color.lerp(surfaceSubtle, other.surfaceSubtle, t)!,
       surfaceAccent: Color.lerp(surfaceAccent, other.surfaceAccent, t)!,
-      surfaceAccentTint: Color.lerp(surfaceAccentTint, other.surfaceAccentTint, t)!,
+      accentBorder: Color.lerp(accentBorder, other.accentBorder, t)!,
       surfaceIconBadge: Color.lerp(surfaceIconBadge, other.surfaceIconBadge, t)!,
       outline: Color.lerp(outline, other.outline, t)!,
       shadow: Color.lerp(shadow, other.shadow, t)!,
