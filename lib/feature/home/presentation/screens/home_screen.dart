@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:slovo/app/router/app_routes.dart';
 import 'package:slovo/core/assets/app_assets.dart';
-import 'package:slovo/core/logging/app_logger.dart';
 import 'package:slovo/core/theme/_.dart';
+import 'package:slovo/feature/home/presentation/widgets/start_learning_section.dart';
 import 'package:slovo/feature/home/presentation/widgets/statistic_card.dart';
-import 'package:slovo/feature/learning/di/due_words_provider.dart';
 import 'package:slovo/feature/profile/di/profile_provider.dart';
 import 'package:slovo/feature/vocabulary/di/collection_provider.dart';
 import 'package:slovo/shared/widgets/_.dart';
@@ -28,7 +25,7 @@ class HomeScreen extends StatelessWidget {
             children: [_Greetings(), _DailyStreak()],
           ),
           _DailyProgress(),
-          _StartLearningButton(),
+          const StartLearningSection(),
           _StatsSection(),
         ],
       ),
@@ -245,63 +242,7 @@ class _DailyProgress extends ConsumerWidget {
   }
 }
 
-class _StartLearningButton extends ConsumerWidget {
-  const _StartLearningButton();
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-
-    final dueWordsAsync = ref.watch(dueWordsProvider);
-
-    if (dueWordsAsync.hasError) {
-      AppLogger.error('Failed to load due words: ${dueWordsAsync.error}');
-    }
-
-    return AppButton(
-      onTap:  dueWordsAsync.hasValue
-          ? () => context.push(AppRoutes.learning.path, extra: dueWordsAsync.value)
-          : null,
-      isDisabled:  !dueWordsAsync.hasValue,
-      style: AppButtonStyle.primary(
-        context.colors,
-      ).copyWith(background: context.colors.primaryDark),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        spacing: AppSpacing.md,
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppAccents.yellow,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.play_arrow, color: context.colors.primaryDark),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Start Learning',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: context.colors.textOnBrand,
-                  fontSize: 18,
-                ),
-              ),
-              Text(
-                'Recommended for you',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: context.colors.textOnBrand.withValues(alpha: 0.6),
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _StatsSection extends ConsumerWidget {
   const _StatsSection();

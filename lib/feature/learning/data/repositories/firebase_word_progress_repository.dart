@@ -38,4 +38,10 @@ class FirebaseWordProgressRepository implements WordProgressRepository {
       userId,
     ).doc(wordProgress.dictionaryEntryId).set(wordProgress.toJson());
   }
+
+  @override
+  Future<List<WordProgress>> getAllProgress({required String userId}) async {
+    final snapshot = await _progressReference(userId).get();
+    return snapshot.docs.map((doc) => WordProgress.fromJson(doc.data())).toList();
+  }
 }
