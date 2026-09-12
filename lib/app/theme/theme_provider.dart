@@ -8,7 +8,11 @@ class ThemeNotifier extends Notifier<ThemeMode> {
   ThemeMode build() {
     final sharedPreferences = ref.watch(sharedPreferencesProvider);
     final currentThemeMode = sharedPreferences.getString('themeMode');
-    if (currentThemeMode == null) return ThemeMode.system;
+
+    // Code for debugging the current theme mode
+    if (currentThemeMode == null) return ThemeMode.light;
+
+    // if (currentThemeMode == null) return ThemeMode.system;
     return currentThemeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
 
   }
