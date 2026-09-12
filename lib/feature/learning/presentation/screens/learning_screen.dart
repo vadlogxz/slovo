@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:slovo/core/logging/app_logger.dart';
 import 'package:slovo/core/theme/_.dart';
 import 'package:slovo/feature/learning/di/learning_session_provider.dart';
@@ -85,17 +84,7 @@ class _LearningAppBar extends StatelessWidget {
     return Row(
       spacing: AppSpacing.sm,
       children: [
-        GestureDetector(
-          onTap: () => context.pop(),
-          child: Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              border: Border.all(color: context.colors.outline, width: 2),
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-            ),
-            child: Icon(Icons.close, color: context.colors.textMuted),
-          ),
-        ),
+        PopButton(),
         Expanded(
           child: AppProgressBar(
             value: (currentWordIndex + 1) / totalWords,

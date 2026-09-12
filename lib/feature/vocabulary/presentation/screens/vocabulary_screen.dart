@@ -9,7 +9,6 @@ import 'package:slovo/feature/vocabulary/domain/models/collection_icon.dart';
 import 'package:slovo/feature/vocabulary/presentation/extensions/collection_color_x.dart';
 import 'package:slovo/feature/vocabulary/presentation/extensions/collection_icon_x.dart';
 import 'package:slovo/shared/widgets/_.dart';
-import 'package:slovo/shared/widgets/dash_border_painter.dart';
 
 class VocabularyScreen extends StatelessWidget {
   const VocabularyScreen({super.key});

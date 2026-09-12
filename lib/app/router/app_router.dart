@@ -9,6 +9,7 @@ import 'package:slovo/feature/onboarding/presentation/screens/_.dart';
 import 'package:slovo/feature/profile/presentation/profile_screen.dart';
 import 'package:slovo/feature/vocabulary/domain/models/word.dart';
 import 'package:slovo/feature/vocabulary/presentation/screens/add_collection_screen.dart';
+import 'package:slovo/feature/vocabulary/presentation/screens/add_word_screen.dart';
 import 'package:slovo/feature/vocabulary/presentation/screens/vocabulary_screen.dart';
 
 final appRoutes = <RouteBase>[
@@ -37,6 +38,12 @@ final appRoutes = <RouteBase>[
     name: AppRoutes.learning.name,
 
     builder: (context, state) => LearningScreen(sessionWordList: state.extra as List<Word>,),
+  ),
+  GoRoute(
+    path: AppRoutes.addWord.path,
+    name: AppRoutes.addWord.name,
+
+    builder: (context, state) => AddWordScreen(),
   ),
   StatefulShellRoute(
     builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
